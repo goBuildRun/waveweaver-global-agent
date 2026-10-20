@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WaveWeaver (织浪 AI) — 8-Stage Multi-Channel AI Media Operating System & MPT Video Factory</title>
+  <style>
+    :root {
+      --bg-base: #0A0E17;
+      --bg-card: #121826;
+      --bg-elevated: #1C2539;
+      --border: #2A3652;
+      --text-main: #F4F7FB;
+      --text-muted: #94A3B8;
+      --accent-indigo: #6366F1;
+      --accent-cyan: #06B6D4;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top left, #17203A 0%, var(--bg-base) 65%);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", sans-serif;
+      line-height: 1.45;
+      min-height: 100vh;
+      padding-bottom: 64px;
+    }
+    header {
+      background: rgba(18, 24, 38, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 26px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-row { display: flex; align-items: center; gap: 14px; }
+    .brand-badge {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, #06B6D4, #6366F1);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 18px; color: #FFF;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+    .brand-title h1 { font-size: 18px; font-weight: 800; }
+    .brand-title p { font-size: 12px; color: var(--text-muted); }
+    .channel-bar { display: flex; gap: 8px; }
+    .ch-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ch-btn.active {
+      border-color: var(--accent-cyan);
+      color: #FFF;
+      background: rgba(6, 182, 212, 0.2);
+    }
+    .stage-strip {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      padding: 12px 26px;
+      background: rgba(10, 14, 23, 0.82);
+      border-bottom: 1px solid var(--border);
+    }
+    .stage-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+    .stage-pill strong { display: block; color: var(--accent-cyan); font-size: 11.5px; }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 20px;
+      padding: 18px 26px;
+    }
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25));
+      border-color: var(--accent-cyan);
+      color: #FFF;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .section-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .badge {
+      display: inline-block; padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    .badge-cyan { background: rgba(6, 182, 212, 0.18); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.18); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-amber { background: rgba(245, 158, 11, 0.18); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-rose { background: rgba(244, 63, 94, 0.18); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+    .btn {
+      background: linear-gradient(135deg, #06B6D4, #4F46E5);
+      color: #FFF; border: none; padding: 8px 14px; border-radius: 8px;
+      font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-emerald { background: linear-gradient(135deg, #10B981, #059669); color: #051B11; }
+    .btn-amber { background: linear-gradient(135deg, #F59E0B, #D97706); color: #0A0E17; }
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .item-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .item-card.highlight-cyan { border-color: var(--accent-cyan); }
+    .item-card.highlight-emerald { border-color: var(--accent-emerald); }
+    .item-card.highlight-rose { border-color: var(--accent-rose); }
+    .telemetry-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      position: sticky;
+      top: 78px;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+    }
+    .log-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+    }
+    .log-item pre {
+      margin-top: 6px;
+      font-family: "JetBrains Mono", "SF Mono", monospace;
+      font-size: 10.5px;
+      color: #93C5FD;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .mono { font-family: "JetBrains Mono", "SF Mono", monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-row">
+      <div class="brand-badge">WW</div>
+      <div class="brand-title">
+        <h1>WaveWeaver (织浪 AI) · 8-Stage Multi-Channel AI Media OS & MPT Video Factory</h1>
+        <p>Organization ➔ Workspace ➔ ContentChannel Isolation · Anti-AI-Slop Humanized Calibration · MPT 9:16 Avatar Video & 5-Format Production · 7-Day Review Loop</p>
+      </div>
+    </div>
+    <div class="channel-bar">
+      <button class="ch-btn active" onclick="switchChannel('ch-ai-quant', this)">Channel 1: AI Frontier & On-Chain Alpha</button>
+      <button class="ch-btn" onclick="switchChannel('ch-seasonal-terroir', this)">Channel 2: Season-Wise 24 Solar Terms</button>
+    </div>
+  </header>
+
+  <div id="stage-strip" class="stage-strip"></div>
+
+  <div class="main-grid">
+    <div>
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-intel', this)">1. 频道工作台与情报 · Strategy & Intel Ingestion</button>
+        <button class="tab-btn" onclick="switchTab('tab-calibrate', this)">2. 去AI味校准与预检 · Anti-AI-Slop & Compliance</button>
+        <button class="tab-btn" onclick="switchTab('tab-mpt', this)">3. MPT 视频工厂与五形态 · MPT Video & 5 Formats</button>
+        <button class="tab-btn" onclick="switchTab('tab-dist', this)">4. 三时区排期与7日复盘 · Provenance & 7-Day Loop</button>
+      </div>
+
+      <!-- TAB 1: STRATEGY, MULTI-CHANNEL ISOLATION & INTEL INGESTION -->
+      <div id="tab-intel" class="tab-panel active">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🏢 3-Tier Multi-Tenant Context Isolation (`Organization ➔ Workspace ➔ ContentChannel`)</span>
+                <span class="badge badge-cyan">Zero Cross-Channel Contamination</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Each channel preserves its own audience persona, content pillars, asset library, and connected social accounts.
+              </p>
+            </div>
+          </div>
+          <div id="channel-context-box"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>📡 Stage 2 & 3 · Multi-Source Intelligence Ingestion & Campaign Topic Planning</span>
+                <span class="badge badge-emerald">Explicitly Labeled '来自 AI 整理'</span>
+              </div>
+            </div>
+            <button class="btn" onclick="ingestLiveIntel()">⚡ Ingest Live On-Chain & Macro Intel (Nebius × Tavily)</button>
+          </div>
+          <div id="intel-cards-grid" class="cards-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: ANTI-AI-SLOP CALIBRATION & PRE-FLIGHT COMPLIANCE -->
+      <div id="tab-calibrate" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>✨ Stage 5 & 6 · Humanized Anti-AI-Slop Calibration & Pre-Flight Compliance Gate</span>
+                <span class="badge badge-amber">Simulated Audience Reaction: 93% Retention</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Strips plastic LLM clichés, intercepts prohibited financial/medical guarantees, and tests drafts against simulated audience personas.
+              </p>
+            </div>
+            <button class="btn btn-amber" onclick="runCalibration()">🔬 Run Anti-AI-Slop Calibration & Compliance Check</button>
+          </div>
+          <div id="calibration-view"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: MPT MANAGED VIDEO FACTORY & 5 FORMATS -->
+      <div id="tab-mpt" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🎬 Stage 7 · MPT Managed Video Factory (`vertical-avatar-news`) & 5-Format Production</span>
+                <span class="badge badge-emerald">Human-Takeover Ready</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Transparent 8-step video production pipeline with cost estimation ($0.14), pause/retry recovery, and simultaneous 5-format output.
+              </p>
+            </div>
+            <button class="btn btn-emerald" onclick="produceMptFormats()">🚀 Render MPT 9:16 Avatar Video & All 5 Formats</button>
+          </div>
+          <div id="mpt-view"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: 3-TIMEZONE DISTRIBUTION, SHA-256 PROVENANCE & 7-DAY ANALYTICS -->
+      <div id="tab-dist" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🌍 Stage 8 · 3-Timezone Distribution, SHA-256 Content Provenance & 7-Day Review Loop</span>
+                <span class="badge badge-cyan">Cryptographic Creator Attestation</span>
+              </div>
+            </div>
+            <button class="btn" onclick="mintProvenance()">🔐 Lock 3-Timezone Schedule & Mint SHA-256 Provenance</button>
+          </div>
+          <div id="dist-view"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: LIVE TELEMETRY -->
+    <div class="telemetry-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:14px; font-weight:800;">📡 WaveWeaver Pipeline Telemetry</h3>
+        <span class="badge badge-cyan">E2~E9 Live Audit</span>
+      </div>
+      <div id="telemetry-list"></div>
+    </div>
+  </div>
+
+  <script>
+    let STATE = null;
+
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+    }
+
+    function renderAll() {
+      if (!STATE) return;
+
+      // 8-Stage Strip
+      document.getElementById('stage-strip').innerHTML = STATE.eight_stages.map(s => `
+        <div class="stage-pill">
+          <strong>${s.stage} · ${s.status}</strong>
+          <span>${s.name.split('·')[1] || s.name}</span>
+        </div>
+      `).join('');
+
+      // Active Channel Context
+      const ch = STATE.active_channel;
+      document.getElementById('channel-context-box').innerHTML = `
+        <div class="item-card highlight-cyan">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <div>
+              <span class="badge badge-cyan">${ch.organization}</span>
+              <span class="badge badge-emerald" style="margin-left:6px;">${ch.workspace_name}</span>
+              <h3 style="font-size:16px; margin-top:6px;">${ch.channel_name} (<span class="mono" style="font-size:12px;">${ch.channel_id}</span>)</h3>
+            </div>
+            <span class="badge badge-amber">Connected: ${ch.connected_accounts.join(' · ')}</span>
+          </div>
+          <p style="font-size:12.5px; color:#CBD5E1; margin-bottom:8px;"><strong>Positioning:</strong> ${ch.positioning} | <strong>Tone Guardrails:</strong> ${ch.tone_guardrails}</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${ch.pillars.map(p => `<span class="badge badge-cyan">${p}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      // Intel Cards
+      document.getElementById('intel-cards-grid').innerHTML = STATE.intel_cards.map(c => `
+        <div class="item-card highlight-emerald">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span class="badge badge-cyan">${c.source_badge}</span>
+            <span class="badge badge-amber">传播潜力预估: ${c.virality_estimate}/100</span>
+          </div>
+          <h4 style="font-size:14px; margin-bottom:6px;">${c.title}</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">${c.summary}</p>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#34D399;">
+            <span>Status: ${c.status}</span>
+            <span>Updated: ${c.updated_at}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Calibration View
+      const cal = STATE.calibration_state;
+      document.getElementById('calibration-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          <div class="item-card highlight-rose">
+            <span class="badge badge-rose">BEFORE · Raw Uncalibrated LLM Slop (Rejected)</span>
+            <p style="font-size:12.5px; margin-top:8px; color:#FCA5A5;">"${cal.raw_ai_slop_draft}"</p>
+            <div style="margin-top:10px; font-size:11.5px; color:var(--text-muted);">
+              <strong>Slop Clichés Stripped:</strong> ${cal.slop_phrases_removed.map(s => `<code class="mono" style="color:#FB7185;">${s}</code>`).join(', ')}
+            </div>
+          </div>
+          <div class="item-card highlight-emerald">
+            <span class="badge badge-emerald">AFTER · WaveWeaver Humanized & Evidence-Gated Master</span>
+            <p style="font-size:12.5px; margin-top:8px; color:#D1FAE5;">"${cal.calibrated_human_draft}"</p>
+            <div style="margin-top:10px; font-size:11.5px; color:#34D399;">
+              <strong>Calibrated At:</strong> ${cal.calibrated_at}
+            </div>
+          </div>
+        </div>
+        <div class="item-card highlight-cyan">
+          <h4 style="font-size:13.5px; margin-bottom:8px;">🛡️ Stage 6 Pre-Flight Compliance & Simulated Audience Reactions (模拟受众反应)</h4>
+          <ul style="font-size:12px; color:#CBD5E1; margin-left:18px; margin-bottom:10px;">
+            ${cal.compliance_fixes_applied.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+          <div class="cards-grid">
+            ${cal.simulated_audience_reactions.map(r => `
+              <div style="background:rgba(10,14,23,0.7); padding:10px; border-radius:8px;">
+                <strong style="color:#22D3EE;">Persona: ${r.persona} (Est. Retention ${r.retention_score})</strong>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">"${r.reaction}"</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // MPT & 5 Formats View
+      document.getElementById('mpt-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          ${STATE.five_format_artifacts.map(a => `
+            <div class="item-card highlight-emerald">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <strong>${a.format_name}</strong>
+                <span class="badge badge-emerald">${a.status}</span>
+              </div>
+              <div class="mono" style="font-size:11px; color:#22D3EE; margin-bottom:6px;">Engine: ${a.engine} | ${a.specs}</div>
+              <p style="font-size:12px; color:var(--text-muted);">${a.preview_summary}</p>
+            </div>
+          `).join('')}
+        </div>
+        <div class="item-card highlight-cyan">
+          <h4 style="font-size:13.5px; margin-bottom:8px;">⚙️ MPT 8-Step Transparent Video Sub-Pipeline (Pause / Retry / Manual Fallback Enabled)</h4>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+            ${STATE.mpt_steps.map(st => `
+              <div style="background:rgba(10,14,23,0.7); padding:8px; border-radius:8px; font-size:11.5px;">
+                <strong style="color:#34D399;">${st.name}</strong>
+                <div style="color:var(--text-muted); margin-top:3px;">${st.template}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Distribution, Provenance & 7-Day Review Loop
+      const rev = STATE.seven_day_review_loop;
+      document.getElementById('dist-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          ${STATE.provenance_attestations.map(p => `
+            <div class="item-card highlight-cyan">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span class="badge badge-cyan">${p.attestation_id}</span>
+                <span class="mono" style="font-size:11px; color:#34D399;">Creator: ${p.creator_handle}</span>
+              </div>
+              <h4 style="font-size:14px; margin-bottom:6px;">${p.title}</h4>
+              <div class="mono" style="font-size:11px; color:#FBBF24; word-break:break-all; margin-bottom:6px;">
+                SHA-256 Provenance: ${p.sha256_content_digest}
+              </div>
+              <div style="font-size:11.5px; color:var(--text-muted);">
+                <strong>3-Timezone Queue:</strong> ${p.timezones_scheduled.join(' | ')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="item-card highlight-emerald">
+          <h4 style="font-size:14px; margin-bottom:8px;">📈 7-Day Post-Publish Health Review Loop (${rev.window})</h4>
+          <p style="font-size:12.5px; margin-bottom:8px;">
+            Avg Completion Rate: <strong style="color:#34D399;">${rev.avg_completion_rate_pct}%</strong> ·
+            Save-to-View Ratio: <strong style="color:#22D3EE;">${rev.save_to_view_ratio_pct}%</strong> ·
+            Audience Sentiment: <strong>${rev.comment_sentiment}</strong>
+          </p>
+          <div style="font-size:12px; color:#CBD5E1;">
+            <strong>Next-Round AI Topic Recommendations Fed Back to Stage 2:</strong>
+            <ul style="margin-left:18px; margin-top:4px;">
+              ${rev.next_round_recommendations.map(n => `<li>${n}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+
+      // Telemetry
+      document.getElementById('telemetry-list').innerHTML = STATE.telemetry_logs.map(t => `
+        <div class="log-item">
+          <div style="display:flex; justify-content:space-between;">
+            <strong style="color:#22D3EE;">${t.module}</strong>
+            <span class="mono" style="color:var(--text-muted);">${t.timestamp}</span>
+          </div>
+          <div class="mono" style="font-size:11px; color:#34D399; margin-top:2px;">${t.endpoint} ➔ ${t.status}</div>
+          <pre>${JSON.stringify(t.detail, null, 2)}</pre>
+        </div>
+      `).join('');
+    }
+
+    async function loadState() {
+      const res = await fetch('/api/state');
+      STATE = await res.json();
+      renderAll();
+    }
+
+    async function switchChannel(channelKey, btnEl) {
+      document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      const res = await fetch('/api/switch-channel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel_key: channelKey })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.active_channel_key = data.active_channel_key;
+        STATE.active_channel = data.active_channel;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function ingestLiveIntel() {
+      const res = await fetch('/api/ingest-intel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: 'BNB Chain Tokenized Tech Equities (4STOCK) & 576-Token Golden Washout Report' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.intel_cards = data.intel_cards;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function runCalibration() {
+      const res = await fetch('/api/calibrate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.calibration_state = data.calibration_state;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function produceMptFormats() {
+      const res = await fetch('/api/produce-mpt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.mpt_steps = data.mpt_steps;
+        STATE.five_format_artifacts = data.five_format_artifacts;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function mintProvenance() {
+      const res = await fetch('/api/attest-provenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: '576-Token Golden Washout & Anti-Rug Multi-Format Campaign Master' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.provenance_attestations = data.provenance_attestations;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadState);
+  </script>
+</body>
+</html>
