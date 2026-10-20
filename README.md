@@ -4,6 +4,9 @@
 [![Pipeline: 8-Stage Human-in-the-Loop Media OS](https://img.shields.io/badge/Pipeline-8--Stage_Media_OS_(E2~E9)-06B6D4)](#eight-stage-controlled-content-pipeline)
 [![Video Engine: MPT vertical-avatar-news](https://img.shields.io/badge/Video_Factory-MPT_9%3A16_Avatar_Engine-10B981)](#mpt-managed-video-factory--5-format-production)
 [![Isolation: Org -> Workspace -> ContentChannel](https://img.shields.io/badge/Multi--Tenant-3--Tier_Channel_Isolation-6366F1)](#three-tier-multi-channel-isolation)
+[![Demo Video: YouTube 1080p](https://img.shields.io/badge/🎥%20Watch%20Demo%20Video-YouTube%201080p-red)](https://youtu.be/-Ct0SnpgSB4)
+
+> 🎬 **Watch the 1m39s 1080p English-Narrated Demo Video**: **[https://youtu.be/-Ct0SnpgSB4](https://youtu.be/-Ct0SnpgSB4)**
 
 > **让好内容，持续成浪。**  
 > *"An 8-stage human-in-the-loop AI media operating system that turns raw market, on-chain, and cultural intelligence into calibrated multi-platform videos, carousels, long-form essays, podcasts, and micro-posts—without AI slop."*
