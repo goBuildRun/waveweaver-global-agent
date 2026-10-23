@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WaveWeaver (织浪 AI) — Hackathon Interactive Demo & API Server.
+WaveWeaver — Hackathon Interactive Demo & API Server.
 Zero external dependencies required; runs out-of-the-box on Python 3.10+ (`python3 server.py --port 8767`).
 """
 
@@ -131,13 +131,13 @@ class WaveWeaverRequestHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="WaveWeaver (织浪 AI) Hackathon Server")
+    parser = argparse.ArgumentParser(description="WaveWeaver Hackathon Server")
     parser.add_argument("--host", default="127.0.0.1", help="Bind host")
     parser.add_argument("--port", type=int, default=8767, help="Bind port (default: 8767)")
     args = parser.parse_args()
 
     server = HTTPServer((args.host, args.port), WaveWeaverRequestHandler)
-    print(f"🌊 WaveWeaver (织浪 AI) Workbench running at http://{args.host}:{args.port}")
+    print(f"🌊 WaveWeaver Workbench running at http://{args.host}:{args.port}")
     server.serve_forever()
 
 

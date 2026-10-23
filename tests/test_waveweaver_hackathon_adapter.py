@@ -28,7 +28,7 @@ def test_three_tier_channel_context_isolation() -> None:
 def test_intel_ingestion_and_anti_ai_slop_calibration() -> None:
     intel = handle_api_request("POST", "/api/ingest-intel", {"prompt": "Test BNB Chain AI Agent Intel"})
     assert intel["ok"] is True
-    assert "AI 整理" in intel["card"]["source_badge"]
+    assert "AI-Curated" in intel["card"]["source_badge"]
 
     cal = handle_api_request("POST", "/api/calibrate", {})
     assert cal["ok"] is True

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WaveWeaver (织浪 AI) — Hackathon Standalone Adapter & 8-Stage Multi-Channel Media Operating System.
+WaveWeaver — Hackathon Standalone Adapter & 8-Stage Multi-Channel Media Operating System.
 100% physically isolated from the main proprietary repository (`products/waveweaver`).
 
 Implements 5 core judge-verifiable capabilities:
@@ -29,9 +29,9 @@ CHANNELS_REGISTRY: Dict[str, Dict[str, Any]] = {
     "ch-ai-quant": {
         "channel_id": "content-channel-53f192ef2cee",
         "workspace_id": "workspace-64a258b19c3d",
-        "organization": "LinLan Media Studio (林岚组织)",
-        "workspace_name": "Workspace 01 · Global Tech & Web3 Division (内容一部)",
-        "channel_name": "AI Frontier & On-Chain Alpha (AI 与链上投研前线)",
+        "organization": "LinLan Media Studio",
+        "workspace_name": "Workspace 01 · Global Tech & Web3 Division",
+        "channel_name": "AI Frontier & On-Chain Alpha",
         "positioning": "Evidence-backed AI engineering & empirical Web3 alpha analysis for builders and quant researchers.",
         "audience_persona": "AI engineers, Web3 developers, and data-driven retail/institutional traders who hate hype and AI slop.",
         "pillars": [
@@ -45,9 +45,9 @@ CHANNELS_REGISTRY: Dict[str, Dict[str, Any]] = {
     "ch-seasonal-terroir": {
         "channel_id": "content-channel-88b410ac9102",
         "workspace_id": "workspace-99c102d48a11",
-        "organization": "LinLan Media Studio (林岚组织)",
-        "workspace_name": "Workspace 02 · Cultural & Lifestyle Division (内容二部)",
-        "channel_name": "Season-Wise Culinary & 24 Solar Terms (顺时知味·节气风物)",
+        "organization": "LinLan Media Studio",
+        "workspace_name": "Workspace 02 · Cultural & Lifestyle Division",
+        "channel_name": "Season-Wise Culinary & 24 Solar Terms",
         "positioning": "24 Solar Terms heritage foodways, 10-year neighborhood artisans, and practical household wisdom.",
         "audience_persona": "Family hosts and cultural food lovers seeking authentic county-level terroir without paid ad rankings.",
         "pillars": [
@@ -61,25 +61,25 @@ CHANNELS_REGISTRY: Dict[str, Dict[str, Any]] = {
 }
 
 EIGHT_STAGE_PIPELINE_SPEC: List[Dict[str, str]] = [
-    {"stage": "Stage 1", "code": "STRATEGY_POSITIONING", "name": "1. 频道策略 · Channel Strategy & Pillars", "status": "COMPLETED"},
-    {"stage": "Stage 2", "code": "INTEL_INGESTION", "name": "2. 内容情报 · Multi-Source Intel Ingestion", "status": "COMPLETED"},
-    {"stage": "Stage 3", "code": "CAMPAIGN_TOPIC", "name": "3. 选题与战役 · Topic & Campaign Planning", "status": "COMPLETED"},
-    {"stage": "Stage 4", "code": "MASTER_VARIANTS", "name": "4. 母版与变体 · Master Draft & Platform Variants", "status": "COMPLETED"},
-    {"stage": "Stage 5", "code": "HUMANIZED_CALIBRATION", "name": "5. 编辑校准 · Anti-AI-Slop & Simulated Audience", "status": "ACTIVE"},
-    {"stage": "Stage 6", "code": "PREFLIGHT_COMPLIANCE", "name": "6. 内容预检 · Compliance & Evidence Gate", "status": "READY"},
-    {"stage": "Stage 7", "code": "MPT_FIVE_FORMATS", "name": "7. 形态生产 · MPT Video Factory & 5 Formats", "status": "READY"},
-    {"stage": "Stage 8", "code": "DISTRIBUTION_7D_REVIEW", "name": "8. 分发复盘 · 3-Timezone Schedule & 7-Day Loop", "status": "READY"},
+    {"stage": "Stage 1", "code": "STRATEGY_POSITIONING", "name": "1.Channel Strategy & Pillars", "status": "COMPLETED"},
+    {"stage": "Stage 2", "code": "INTEL_INGESTION", "name": "2.Multi-Source Intel Ingestion", "status": "COMPLETED"},
+    {"stage": "Stage 3", "code": "CAMPAIGN_TOPIC", "name": "3.Topic & Campaign Planning", "status": "COMPLETED"},
+    {"stage": "Stage 4", "code": "MASTER_VARIANTS", "name": "4.Master Draft & Platform Variants", "status": "COMPLETED"},
+    {"stage": "Stage 5", "code": "HUMANIZED_CALIBRATION", "name": "5.Anti-AI-Slop & Simulated Audience", "status": "ACTIVE"},
+    {"stage": "Stage 6", "code": "PREFLIGHT_COMPLIANCE", "name": "6.Compliance & Evidence Gate", "status": "READY"},
+    {"stage": "Stage 7", "code": "MPT_FIVE_FORMATS", "name": "7.MPT Video Factory & 5 Formats", "status": "READY"},
+    {"stage": "Stage 8", "code": "DISTRIBUTION_7D_REVIEW", "name": "8.3-Timezone Schedule & 7-Day Loop", "status": "READY"},
 ]
 
 MPT_VIDEO_PIPELINE_STEPS: List[Dict[str, Any]] = [
-    {"step": 1, "name": "1. 方向与形式 (Direction & Template)", "template": "vertical-avatar-news (9:16 Dual-Layer Split)", "status": "DONE", "progress_pct": 100},
-    {"step": 2, "name": "2. 内容草稿 (Script & Storyboard)", "template": "6-Scene Hook-Evidence-Takeaway Script", "status": "DONE", "progress_pct": 100},
-    {"step": 3, "name": "3. 素材整理 (Verified B-Roll & Charts)", "template": "576-Token Equity Curve + Anti-Rug Code Overlay", "status": "DONE", "progress_pct": 100},
-    {"step": 4, "name": "4. 声音、字幕和版式 (TTS & Dynamic Captions)", "template": "Neural Baritone EN/ZH + Gold Highlight Captions", "status": "DONE", "progress_pct": 100},
-    {"step": 5, "name": "5. 制作进度 (MPT Worker Isolated Render)", "template": "1080x1920 H.264 60fps · Est. Cost $0.14", "status": "DONE", "progress_pct": 100},
-    {"step": 6, "name": "6. 预览与检查 (Expression & Platform Check)", "template": "Zero Copyright / Zero Sensitive Terms Verified", "status": "DONE", "progress_pct": 100},
-    {"step": 7, "name": "7. 成品预览 (Interactive Artifact Preview)", "template": "62s Vertical Avatar Video + 4 Companion Formats", "status": "DONE", "progress_pct": 100},
-    {"step": 8, "name": "8. 继续使用 (Handoff to Distribution & Provenance)", "template": "3-Timezone Queue + SHA-256 On-Chain Attestation", "status": "READY", "progress_pct": 100},
+    {"step": 1, "name": "1. Direction & Template", "template": "vertical-avatar-news (9:16 Dual-Layer Split)", "status": "DONE", "progress_pct": 100},
+    {"step": 2, "name": "2. Script & Storyboard", "template": "6-Scene Hook-Evidence-Takeaway Script", "status": "DONE", "progress_pct": 100},
+    {"step": 3, "name": "3. Verified B-Roll & Charts", "template": "576-Token Equity Curve + Anti-Rug Code Overlay", "status": "DONE", "progress_pct": 100},
+    {"step": 4, "name": "4. TTS & Dynamic Captions", "template": "Neural Baritone EN/ZH + Gold Highlight Captions", "status": "DONE", "progress_pct": 100},
+    {"step": 5, "name": "5. MPT Worker Isolated Render", "template": "1080x1920 H.264 60fps · Est. Cost $0.14", "status": "DONE", "progress_pct": 100},
+    {"step": 6, "name": "6. Expression & Platform Check", "template": "Zero Copyright / Zero Sensitive Terms Verified", "status": "DONE", "progress_pct": 100},
+    {"step": 7, "name": "7. Interactive Artifact Preview", "template": "62s Vertical Avatar Video + 4 Companion Formats", "status": "DONE", "progress_pct": 100},
+    {"step": 8, "name": "8. Handoff to Distribution & Provenance", "template": "3-Timezone Queue + SHA-256 On-Chain Attestation", "status": "READY", "progress_pct": 100},
 ]
 
 
@@ -97,7 +97,7 @@ class WaveWeaverHackathonEngine:
             {
                 "intel_id": "INTEL-2026-1020-01",
                 "channel_key": "ch-ai-quant",
-                "source_badge": "AI 整理 · Source: Aralpha 576-Token Data Lake & Tavily Search",
+                "source_badge": "AI-Curated · Source: Aralpha 576-Token Data Lake & Tavily Search",
                 "title": "Why 78% of New Token Chasers Lose Money in Hour 1 (And How Wick-Stripped Washout Timing Fixes It)",
                 "summary": (
                     "Empirical study of 576 listings shows T+1h FOMO chasing yields -70% median ROI and 90.12% max drawdown due to "
@@ -111,7 +111,7 @@ class WaveWeaverHackathonEngine:
             {
                 "intel_id": "INTEL-2026-1020-02",
                 "channel_key": "ch-ai-quant",
-                "source_badge": "AI 整理 · Source: BNB Chain Anti-Rug Sentinel & GoPlus Feed",
+                "source_badge": "AI-Curated · Source: BNB Chain Anti-Rug Sentinel & GoPlus Feed",
                 "title": "60 Seconds After TGE: Inside the Counterfeit Clone Honeypot Trap & Fail-Closed Defense",
                 "summary": (
                     "Scammers deploy identical-ticker contracts (0% buy tax / 100% sell tax) within 1 minute of official listings. "
@@ -124,8 +124,8 @@ class WaveWeaverHackathonEngine:
             {
                 "intel_id": "INTEL-2026-1020-03",
                 "channel_key": "ch-seasonal-terroir",
-                "source_badge": "AI 整理 · Source: Zhangluo 2,843-County PostGIS Terroir Index",
-                "title": "Frost's Descent (霜降) Dining Guide: Pairing Expiring Mountain Bamboo Shoots for Gout-Safe Family Tables",
+                "source_badge": "AI-Curated · Source: Zhangluo 2,843-County PostGIS Terroir Index",
+                "title": "Frost's Descent Dining Guide: Pairing Expiring Mountain Bamboo Shoots for Gout-Safe Family Tables",
                 "summary": (
                     "How to combine seasonal persimmons, 5-year Xinhui aged tangerine peel (GB/T 20560), and low-purine Jiangnan "
                     "stews while filtering out 94.2% of paid-ad restaurant chains."
@@ -157,8 +157,8 @@ class WaveWeaverHackathonEngine:
             ],
             "compliance_fixes_applied": [
                 "Intercepted prohibited claim 'guaranteed 100x gains' -> Replaced with empirical backtest citation (576 tokens, +725.82% historical sample, not future guarantee)",
-                "Added explicit label: '来自 AI 整理 · Empirical Backtest Data (Not Financial Advice)'",
-                "Standardized metric label from '真实受众反应' to '模拟受众反应 (Simulated Audience Reaction)' and '传播潜力预估 (Estimated Virality Potential: 94/100)'",
+                "Added explicit label: 'AI-Curated & Verified · Empirical Backtest Data (Not Financial Advice)'",
+                "Standardized metric label from 'Verified Audience Reactions' to 'Simulated Audience Reactions (Simulated Audience Reaction)' and 'Virality Potential (Estimated Virality Potential: 94/100)'",
             ],
             "simulated_audience_reactions": [
                 {
@@ -178,7 +178,7 @@ class WaveWeaverHackathonEngine:
         self.five_format_artifacts: List[Dict[str, Any]] = [
             {
                 "format_code": "MPT_VERTICAL_VIDEO",
-                "format_name": "1. 短视频 · MPT Vertical Avatar Video (9:16)",
+                "format_name": "1.MPT Vertical Avatar Video (9:16)",
                 "engine": "MPT Worker + vertical-avatar-news",
                 "specs": "1080×1920 · 62s · EN/ZH Dual Subtitles · Digital Anchor + Live K-Line B-Roll",
                 "status": "READY_TO_PUBLISH",
@@ -186,7 +186,7 @@ class WaveWeaverHackathonEngine:
             },
             {
                 "format_code": "VISUAL_CAROUSEL",
-                "format_name": "2. 轮播图文 · 6-Slide High-Contrast Carousel",
+                "format_name": "2.6-Slide High-Contrast Carousel",
                 "engine": "WaveWeaver Layout Engine",
                 "specs": "1200×1500 (4:5) · 6 Slides · Dark Institutional Theme",
                 "status": "READY_TO_PUBLISH",
@@ -194,7 +194,7 @@ class WaveWeaverHackathonEngine:
             },
             {
                 "format_code": "LONG_ARTICLE",
-                "format_name": "3. 深度长文 · Evidence-Backed Research Essay",
+                "format_name": "3.Evidence-Backed Research Essay",
                 "engine": "Master Draft + Citation Verifier",
                 "specs": "2,450 Words · 4 Mermaid Diagrams · Full Backtest Table",
                 "status": "READY_TO_PUBLISH",
@@ -202,7 +202,7 @@ class WaveWeaverHackathonEngine:
             },
             {
                 "format_code": "PODCAST_AUDIO",
-                "format_name": "4. 双人播客音频 · Dual-Host AI Audio Briefing",
+                "format_name": "4.Dual-Host AI Audio Briefing",
                 "engine": "Multi-Voice Neural TTS",
                 "specs": "4m 15s · 44.1kHz Stereo AAC · Chapter Markers Included",
                 "status": "READY_TO_PUBLISH",
@@ -210,7 +210,7 @@ class WaveWeaverHackathonEngine:
             },
             {
                 "format_code": "MICRO_THREAD",
-                "format_name": "5. 平台短帖 · Calibrated Multi-Platform Micro-Post",
+                "format_name": "5.Calibrated Multi-Platform Micro-Post",
                 "engine": "Platform Variant Adapter",
                 "specs": "<280 Chars / Platform-Native Formatting · Zero AI Clichés",
                 "status": "READY_TO_PUBLISH",
@@ -292,9 +292,9 @@ class WaveWeaverHackathonEngine:
             "intel_id": intel_id,
             "channel_key": self.active_channel_key,
             "source_badge": (
-                "AI 整理 (Live API Verified) · Nebius NVIDIA Nemotron-70B × Tavily"
+                "AI-Curated (Live API Verified) · Nebius NVIDIA Nemotron-70B × Tavily"
                 if (live_verified or nebius_key)
-                else "AI 整理 · Source: Nebius NVIDIA Nemotron-70B × Tavily Sandbox + On-Chain Feed"
+                else "AI-Curated · Source: Nebius NVIDIA Nemotron-70B × Tavily Sandbox + On-Chain Feed"
             ),
             "title": f"Campaign Signal: {prompt_clean[:72]}",
             "summary": (
@@ -316,7 +316,7 @@ class WaveWeaverHackathonEngine:
                 "intel_id": intel_id,
                 "channel_id": CHANNELS_REGISTRY[self.active_channel_key]["channel_id"],
                 "virality_potential_estimate": 96,
-                "source_disclosure": "Explicitly labeled '来自 AI 整理' with primary citations",
+                "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations",
             },
         )
         return card

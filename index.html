@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WaveWeaver — 8-Stage Multi-Channel AI Media Operating System & MPT Video Factory</title>
+  <style>
+    :root {
+      --bg-base: #0A0E17;
+      --bg-card: #121826;
+      --bg-elevated: #1C2539;
+      --border: #2A3652;
+      --text-main: #F4F7FB;
+      --text-muted: #94A3B8;
+      --accent-indigo: #6366F1;
+      --accent-cyan: #06B6D4;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top left, #17203A 0%, var(--bg-base) 65%);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", sans-serif;
+      line-height: 1.45;
+      min-height: 100vh;
+      padding-bottom: 64px;
+    }
+    header {
+      background: rgba(18, 24, 38, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 26px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-row { display: flex; align-items: center; gap: 14px; }
+    .brand-badge {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, #06B6D4, #6366F1);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 18px; color: #FFF;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+    .brand-title h1 { font-size: 18px; font-weight: 800; }
+    .brand-title p { font-size: 12px; color: var(--text-muted); }
+    .channel-bar { display: flex; gap: 8px; }
+    .ch-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ch-btn.active {
+      border-color: var(--accent-cyan);
+      color: #FFF;
+      background: rgba(6, 182, 212, 0.2);
+    }
+    .stage-strip {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      padding: 12px 26px;
+      background: rgba(10, 14, 23, 0.82);
+      border-bottom: 1px solid var(--border);
+    }
+    .stage-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+    .stage-pill strong { display: block; color: var(--accent-cyan); font-size: 11.5px; }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 20px;
+      padding: 18px 26px;
+    }
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25));
+      border-color: var(--accent-cyan);
+      color: #FFF;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .section-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .badge {
+      display: inline-block; padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    .badge-cyan { background: rgba(6, 182, 212, 0.18); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.18); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-amber { background: rgba(245, 158, 11, 0.18); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-rose { background: rgba(244, 63, 94, 0.18); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+    .btn {
+      background: linear-gradient(135deg, #06B6D4, #4F46E5);
+      color: #FFF; border: none; padding: 8px 14px; border-radius: 8px;
+      font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-emerald { background: linear-gradient(135deg, #10B981, #059669); color: #051B11; }
+    .btn-amber { background: linear-gradient(135deg, #F59E0B, #D97706); color: #0A0E17; }
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .item-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .item-card.highlight-cyan { border-color: var(--accent-cyan); }
+    .item-card.highlight-emerald { border-color: var(--accent-emerald); }
+    .item-card.highlight-rose { border-color: var(--accent-rose); }
+    .telemetry-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      position: sticky;
+      top: 78px;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+    }
+    .log-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+    }
+    .log-item pre {
+      margin-top: 6px;
+      font-family: "JetBrains Mono", "SF Mono", monospace;
+      font-size: 10.5px;
+      color: #93C5FD;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .mono { font-family: "JetBrains Mono", "SF Mono", monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-row">
+      <div class="brand-badge">WW</div>
+      <div class="brand-title">
+        <h1>WaveWeaver · 8-Stage Multi-Channel AI Media OS & MPT Video Factory</h1>
+        <p>Organization ➔ Workspace ➔ ContentChannel Isolation · Anti-AI-Slop Humanized Calibration · MPT 9:16 Avatar Video & 5-Format Production · 7-Day Review Loop</p>
+      </div>
+    </div>
+    <div class="channel-bar">
+      <button class="ch-btn active" onclick="switchChannel('ch-ai-quant', this)">Channel 1: AI Frontier & On-Chain Alpha</button>
+      <button class="ch-btn" onclick="switchChannel('ch-seasonal-terroir', this)">Channel 2: Season-Wise 24 Solar Terms</button>
+    </div>
+  </header>
+
+  <div id="stage-strip" class="stage-strip"></div>
+
+  <div class="main-grid">
+    <div>
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-intel', this)">1. Strategy & Intel Ingestion</button>
+        <button class="tab-btn" onclick="switchTab('tab-calibrate', this)">2. Anti-AI-Slop & Compliance Gate</button>
+        <button class="tab-btn" onclick="switchTab('tab-mpt', this)">3. MPT Video Factory & 5 Formats</button>
+        <button class="tab-btn" onclick="switchTab('tab-dist', this)">4. Provenance & 7-Day Review Loop</button>
+      </div>
+
+      <!-- TAB 1: STRATEGY, MULTI-CHANNEL ISOLATION & INTEL INGESTION -->
+      <div id="tab-intel" class="tab-panel active">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🏢 3-Tier Multi-Tenant Context Isolation (`Organization ➔ Workspace ➔ ContentChannel`)</span>
+                <span class="badge badge-cyan">Zero Cross-Channel Contamination</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Each channel preserves its own audience persona, content pillars, asset library, and connected social accounts.
+              </p>
+            </div>
+          </div>
+          <div id="channel-context-box"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>📡 Stage 2 & 3 · Multi-Source Intelligence Ingestion & Campaign Topic Planning</span>
+                <span class="badge badge-emerald">Explicitly Labeled 'AI-Curated & Verified'</span>
+              </div>
+            </div>
+            <button class="btn" onclick="ingestLiveIntel()">⚡ Ingest Live On-Chain & Macro Intel (Nebius × Tavily)</button>
+          </div>
+          <div id="intel-cards-grid" class="cards-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: ANTI-AI-SLOP CALIBRATION & PRE-FLIGHT COMPLIANCE -->
+      <div id="tab-calibrate" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>✨ Stage 5 & 6 · Humanized Anti-AI-Slop Calibration & Pre-Flight Compliance Gate</span>
+                <span class="badge badge-amber">Simulated Audience Reaction: 93% Retention</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Strips plastic LLM clichés, intercepts prohibited financial/medical guarantees, and tests drafts against simulated audience personas.
+              </p>
+            </div>
+            <button class="btn btn-amber" onclick="runCalibration()">🔬 Run Anti-AI-Slop Calibration & Compliance Check</button>
+          </div>
+          <div id="calibration-view"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: MPT MANAGED VIDEO FACTORY & 5 FORMATS -->
+      <div id="tab-mpt" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🎬 Stage 7 · MPT Managed Video Factory (`vertical-avatar-news`) & 5-Format Production</span>
+                <span class="badge badge-emerald">Human-Takeover Ready</span>
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                Transparent 8-step video production pipeline with cost estimation ($0.14), pause/retry recovery, and simultaneous 5-format output.
+              </p>
+            </div>
+            <button class="btn btn-emerald" onclick="produceMptFormats()">🚀 Render MPT 9:16 Avatar Video & All 5 Formats</button>
+          </div>
+          <div id="mpt-view"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: 3-TIMEZONE DISTRIBUTION, SHA-256 PROVENANCE & 7-DAY ANALYTICS -->
+      <div id="tab-dist" class="tab-panel">
+        <div class="section-card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">
+                <span>🌍 Stage 8 · 3-Timezone Distribution, SHA-256 Content Provenance & 7-Day Review Loop</span>
+                <span class="badge badge-cyan">Cryptographic Creator Attestation</span>
+              </div>
+            </div>
+            <button class="btn" onclick="mintProvenance()">🔐 Lock 3-Timezone Schedule & Mint SHA-256 Provenance</button>
+          </div>
+          <div id="dist-view"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: LIVE TELEMETRY -->
+    <div class="telemetry-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:14px; font-weight:800;">📡 WaveWeaver Pipeline Telemetry</h3>
+        <span class="badge badge-cyan">E2~E9 Live Audit</span>
+      </div>
+      <div id="telemetry-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- STATIC GITHUB PAGES FALLBACK START ---
+    const STATIC_MOCKS = {"/api/state": {"ok": true, "active_channel_key": "ch-ai-quant", "active_channel": {"channel_id": "content-channel-53f192ef2cee", "workspace_id": "workspace-64a258b19c3d", "organization": "LinLan Media Studio", "workspace_name": "Workspace 01 · Global Tech & Web3 Division", "channel_name": "AI Frontier & On-Chain Alpha", "positioning": "Evidence-backed AI engineering & empirical Web3 alpha analysis for builders and quant researchers.", "audience_persona": "AI engineers, Web3 developers, and data-driven retail/institutional traders who hate hype and AI slop.", "pillars": ["Pillar 1 · Empirical Backtest Breakdowns (576-Token Data)", "Pillar 2 · On-Chain Anti-Rug & Consumer Security Alerts", "Pillar 3 · Open-Source LLM & Multi-Agent Architecture"], "tone_guardrails": "Crisp, quantitative, zero-hype; cite primary sources; never promise guaranteed returns.", "connected_accounts": ["YouTube Shorts (@AlphaFrontier)", "X / Twitter (@AlphaFrontierHQ)", "Bilibili / WeChat Video"]}, "channels": {"ch-ai-quant": {"channel_id": "content-channel-53f192ef2cee", "workspace_id": "workspace-64a258b19c3d", "organization": "LinLan Media Studio", "workspace_name": "Workspace 01 · Global Tech & Web3 Division", "channel_name": "AI Frontier & On-Chain Alpha", "positioning": "Evidence-backed AI engineering & empirical Web3 alpha analysis for builders and quant researchers.", "audience_persona": "AI engineers, Web3 developers, and data-driven retail/institutional traders who hate hype and AI slop.", "pillars": ["Pillar 1 · Empirical Backtest Breakdowns (576-Token Data)", "Pillar 2 · On-Chain Anti-Rug & Consumer Security Alerts", "Pillar 3 · Open-Source LLM & Multi-Agent Architecture"], "tone_guardrails": "Crisp, quantitative, zero-hype; cite primary sources; never promise guaranteed returns.", "connected_accounts": ["YouTube Shorts (@AlphaFrontier)", "X / Twitter (@AlphaFrontierHQ)", "Bilibili / WeChat Video"]}, "ch-seasonal-terroir": {"channel_id": "content-channel-88b410ac9102", "workspace_id": "workspace-99c102d48a11", "organization": "LinLan Media Studio", "workspace_name": "Workspace 02 · Cultural & Lifestyle Division", "channel_name": "Season-Wise Culinary & 24 Solar Terms", "positioning": "24 Solar Terms heritage foodways, 10-year neighborhood artisans, and practical household wisdom.", "audience_persona": "Family hosts and cultural food lovers seeking authentic county-level terroir without paid ad rankings.", "pillars": ["Pillar 1 · 24 Solar Terms Phenology & Seasonal Recipes", "Pillar 2 · 2,843-County National GI Artisans", "Pillar 3 · Low-Purine & Family Health Dining Guides"], "tone_guardrails": "Warm, grounded, tactile, culturally literate; zero exaggerated medical claims.", "connected_accounts": ["RedNote / Xiaohongshu (@SeasonWise)", "WeChat Official Account", "TikTok / Douyin"]}}, "eight_stages": [{"stage": "Stage 1", "code": "STRATEGY_POSITIONING", "name": "1.Channel Strategy & Pillars", "status": "COMPLETED"}, {"stage": "Stage 2", "code": "INTEL_INGESTION", "name": "2.Multi-Source Intel Ingestion", "status": "COMPLETED"}, {"stage": "Stage 3", "code": "CAMPAIGN_TOPIC", "name": "3.Topic & Campaign Planning", "status": "COMPLETED"}, {"stage": "Stage 4", "code": "MASTER_VARIANTS", "name": "4.Master Draft & Platform Variants", "status": "COMPLETED"}, {"stage": "Stage 5", "code": "HUMANIZED_CALIBRATION", "name": "5.Anti-AI-Slop & Simulated Audience", "status": "ACTIVE"}, {"stage": "Stage 6", "code": "PREFLIGHT_COMPLIANCE", "name": "6.Compliance & Evidence Gate", "status": "READY"}, {"stage": "Stage 7", "code": "MPT_FIVE_FORMATS", "name": "7.MPT Video Factory & 5 Formats", "status": "READY"}, {"stage": "Stage 8", "code": "DISTRIBUTION_7D_REVIEW", "name": "8.3-Timezone Schedule & 7-Day Loop", "status": "READY"}], "intel_cards": [{"intel_id": "INTEL-639F25", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: Nebius NVIDIA Nemotron-70B × Tavily Sandbox + On-Chain Feed", "title": "Campaign Signal: BNB Chain Tokenized Tech Equities (4STOCK) & 576-Token Golden Washout Re", "summary": "Structured into 3 content angles: (1) Why RWA Tokenized Stocks on BNB Chain bridge TradFi catalysts; (2) How 1s opening wick stripping prevents bad entries; (3) Step-by-step 2.5x principal recovery guide.", "virality_estimate": 96, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-23 15:02 UTC"}, {"intel_id": "INTEL-2026-1020-01", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: Aralpha 576-Token Data Lake & Tavily Search", "title": "Why 78% of New Token Chasers Lose Money in Hour 1 (And How Wick-Stripped Washout Timing Fixes It)", "summary": "Empirical study of 576 listings shows T+1h FOMO chasing yields -70% median ROI and 90.12% max drawdown due to 1-second opening auction wicks (e.g., DNA $0.04 fake wick vs $0.175 real support). Entering during T+12h~72h with a 2.5x 40% principal-recovery rule delivers +725.82% return and 4.11% max drawdown.", "virality_estimate": 94, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-20 14:10 UTC"}, {"intel_id": "INTEL-2026-1020-02", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: BNB Chain Anti-Rug Sentinel & GoPlus Feed", "title": "60 Seconds After TGE: Inside the Counterfeit Clone Honeypot Trap & Fail-Closed Defense", "summary": "Scammers deploy identical-ticker contracts (0% buy tax / 100% sell tax) within 1 minute of official listings. Demonstrates how cross-verifying against a 684-token official registry prevents 100% of impersonator losses.", "virality_estimate": 91, "status": "READY_FOR_TOPIC", "updated_at": "2026-10-20 14:25 UTC"}, {"intel_id": "INTEL-2026-1020-03", "channel_key": "ch-seasonal-terroir", "source_badge": "AI-Curated · Source: Zhangluo 2,843-County PostGIS Terroir Index", "title": "Frost's Descent Dining Guide: Pairing Expiring Mountain Bamboo Shoots for Gout-Safe Family Tables", "summary": "How to combine seasonal persimmons, 5-year Xinhui aged tangerine peel (GB/T 20560), and low-purine Jiangnan stews while filtering out 94.2% of paid-ad restaurant chains.", "virality_estimate": 89, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-20 14:30 UTC"}], "calibration_state": {"raw_ai_slop_draft": "In today's fast-paced crypto landscape, delving into new token launches is a double-edged sword. Many traders experience guaranteed 100x gains if they use smart AI bots, while others face rug pulls. Let's unpack how our revolutionary platform seamlessly empowers your trading journey!", "calibrated_human_draft": "We ran the 1-hour K-lines on 576 real token listings so you don't have to guess. If you market-buy in the first 60 minutes (T+1h), your median trade ROI is -70.0% with a brutal 90.12% max drawdown. Why? Because 1-second opening auction wicks—like DNA printing $0.0400 before settling at $0.1750 real support—trick standard bots. Here is the exact 3-step checklist we use: strip bar[0] opening wicks, wait for the T+12h~72h washout zone [support, +22%], and sell 40% at 2.5x to recover 100% of initial principal.", "slop_phrases_removed": ["In today's fast-paced crypto landscape", "delving into", "double-edged sword", "revolutionary platform seamlessly empowers"], "compliance_fixes_applied": ["Intercepted prohibited claim 'guaranteed 100x gains' -> Replaced with empirical backtest citation (576 tokens, +725.82% historical sample, not future guarantee)", "Added explicit label: 'AI-Curated & Verified · Empirical Backtest Data (Not Financial Advice)'", "Standardized metric label from 'Verified Audience Reactions' to 'Simulated Audience Reactions (Simulated Audience Reaction)' and 'Virality Potential (Estimated Virality Potential: 94/100)'"], "simulated_audience_reactions": [{"persona": "Quant Developer / DeFi Builder", "reaction": "Showing the exact bar[0] opening wick math ($0.04 vs $0.175) immediately proves this isn't generic ChatGPT filler. Instant bookmark.", "retention_score": "93%"}, {"persona": "Cautious Retail Trader", "reaction": "The 'sell 40% at 2.5x = 100% principal recovered' arithmetic is super clear and actionable.", "retention_score": "89%"}], "calibrated_at": "2026-10-23 15:02:18 UTC"}, "mpt_steps": [{"step": 1, "name": "1. Direction & Template", "template": "vertical-avatar-news (9:16 Dual-Layer Split)", "status": "DONE", "progress_pct": 100}, {"step": 2, "name": "2. Script & Storyboard", "template": "6-Scene Hook-Evidence-Takeaway Script", "status": "DONE", "progress_pct": 100}, {"step": 3, "name": "3. Verified B-Roll & Charts", "template": "576-Token Equity Curve + Anti-Rug Code Overlay", "status": "DONE", "progress_pct": 100}, {"step": 4, "name": "4. TTS & Dynamic Captions", "template": "Neural Baritone EN/ZH + Gold Highlight Captions", "status": "DONE", "progress_pct": 100}, {"step": 5, "name": "5. MPT Worker Isolated Render", "template": "1080x1920 H.264 60fps · Est. Cost $0.14", "status": "DONE", "progress_pct": 100}, {"step": 6, "name": "6. Expression & Platform Check", "template": "Zero Copyright / Zero Sensitive Terms Verified", "status": "DONE", "progress_pct": 100}, {"step": 7, "name": "7. Interactive Artifact Preview", "template": "62s Vertical Avatar Video + 4 Companion Formats", "status": "DONE", "progress_pct": 100}, {"step": 8, "name": "8. Handoff to Distribution & Provenance", "template": "3-Timezone Queue + SHA-256 On-Chain Attestation", "status": "READY", "progress_pct": 100}], "five_format_artifacts": [{"format_code": "MPT_VERTICAL_VIDEO", "format_name": "1.MPT Vertical Avatar Video (9:16)", "engine": "MPT Worker + vertical-avatar-news", "specs": "1080×1920 · 62s · EN/ZH Dual Subtitles · Digital Anchor + Live K-Line B-Roll", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Hook (0-6s): DNA $0.04 1s fake wick trap ➔ Body (6-45s): 576-token washout zone [support, +22%] & Anti-Rug gate ➔ CTA (45-62s): 2.5x Free-Ride calculator."}, {"format_code": "VISUAL_CAROUSEL", "format_name": "2.6-Slide High-Contrast Carousel", "engine": "WaveWeaver Layout Engine", "specs": "1200×1500 (4:5) · 6 Slides · Dark Institutional Theme", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Slide 1: T+1h Chase (-70% ROI) vs Golden Window (+725.82%) ➔ Slide 2: 1s Wick Anatomy ➔ Slide 3: 684-Token Anti-Rug Gate ➔ Slide 4: 2.5x Free-Ride Math."}, {"format_code": "LONG_ARTICLE", "format_name": "3.Evidence-Backed Research Essay", "engine": "Master Draft + Citation Verifier", "specs": "2,450 Words · 4 Mermaid Diagrams · Full Backtest Table", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Full empirical breakdown of 576 Binance Alpha & BNB Chain listings with reproducible Python snippets."}, {"format_code": "PODCAST_AUDIO", "format_name": "4.Dual-Host AI Audio Briefing", "engine": "Multi-Voice Neural TTS", "specs": "4m 15s · 44.1kHz Stereo AAC · Chapter Markers Included", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Conversational deep dive between Quant Lead & Security Researcher on avoiding TGE honeypots."}, {"format_code": "MICRO_THREAD", "format_name": "5.Calibrated Multi-Platform Micro-Post", "engine": "Platform Variant Adapter", "specs": "<280 Chars / Platform-Native Formatting · Zero AI Clichés", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Punchy data-first summary with direct timestamps and SHA-256 content provenance hash."}], "provenance_attestations": [{"attestation_id": "WW-PROV-CC89E4D1", "title": "576-Token Golden Washout & Anti-Rug Multi-Format Campaign Master", "creator_handle": "@LinLan_AI_Frontier", "channel_id": "content-channel-53f192ef2cee", "sha256_content_digest": "0xcc89e4d1067672ac97a44435680138112149d5039283e562dfeb5809e31f8edf", "timezones_scheduled": ["Asia/Shanghai (20:00 CST · RedNote / WeChat Video)", "Europe/London (13:00 UTC · X / YouTube Shorts)", "America/New_York (09:00 EDT · LinkedIn / Substack)"], "timestamp": "2026-10-23T15:02:18.004223+00:00"}, {"attestation_id": "WW-PROV-2DBFD08A", "title": "Why 78% of New Token Chasers Lose Money in Hour 1 (576-Token Study)", "creator_handle": "@LinLan_AI_Frontier", "channel_id": "content-channel-53f192ef2cee", "sha256_content_digest": "0x2dbfd08a2e24f0777ef64ae3fd590451fa67eb12692aafc3e64ab370dd65bd07", "timezones_scheduled": ["Asia/Shanghai (20:00 CST · RedNote / WeChat Video)", "Europe/London (13:00 UTC · X / YouTube Shorts)", "America/New_York (09:00 EDT · LinkedIn / Substack)"], "timestamp": "2026-10-23T15:02:18.003955+00:00"}], "seven_day_review_loop": {"window": "D+1 to D+7 Post-Publish Health Loop", "avg_completion_rate_pct": 68.4, "save_to_view_ratio_pct": 14.2, "comment_sentiment": "92% Constructive / High Technical Trust", "next_round_recommendations": ["Follow-up Topic A: Deep dive into BNB Chain Tokenized Tech Equities (4STOCK / GSTOCK) washout support zones", "Follow-up Topic B: Live teardown of 3 recent fake-clone honeypot contracts caught by INV-06"]}, "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/switch-channel:ch-ai-quant": {"ok": true, "active_channel_key": "ch-ai-quant", "active_channel": {"channel_id": "content-channel-53f192ef2cee", "workspace_id": "workspace-64a258b19c3d", "organization": "LinLan Media Studio", "workspace_name": "Workspace 01 · Global Tech & Web3 Division", "channel_name": "AI Frontier & On-Chain Alpha", "positioning": "Evidence-backed AI engineering & empirical Web3 alpha analysis for builders and quant researchers.", "audience_persona": "AI engineers, Web3 developers, and data-driven retail/institutional traders who hate hype and AI slop.", "pillars": ["Pillar 1 · Empirical Backtest Breakdowns (576-Token Data)", "Pillar 2 · On-Chain Anti-Rug & Consumer Security Alerts", "Pillar 3 · Open-Source LLM & Multi-Agent Architecture"], "tone_guardrails": "Crisp, quantitative, zero-hype; cite primary sources; never promise guaranteed returns.", "connected_accounts": ["YouTube Shorts (@AlphaFrontier)", "X / Twitter (@AlphaFrontierHQ)", "Bilibili / WeChat Video"]}, "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/switch-channel:ch-solar-living": {"ok": true, "active_channel_key": "ch-ai-quant", "active_channel": {"channel_id": "content-channel-53f192ef2cee", "workspace_id": "workspace-64a258b19c3d", "organization": "LinLan Media Studio", "workspace_name": "Workspace 01 · Global Tech & Web3 Division", "channel_name": "AI Frontier & On-Chain Alpha", "positioning": "Evidence-backed AI engineering & empirical Web3 alpha analysis for builders and quant researchers.", "audience_persona": "AI engineers, Web3 developers, and data-driven retail/institutional traders who hate hype and AI slop.", "pillars": ["Pillar 1 · Empirical Backtest Breakdowns (576-Token Data)", "Pillar 2 · On-Chain Anti-Rug & Consumer Security Alerts", "Pillar 3 · Open-Source LLM & Multi-Agent Architecture"], "tone_guardrails": "Crisp, quantitative, zero-hype; cite primary sources; never promise guaranteed returns.", "connected_accounts": ["YouTube Shorts (@AlphaFrontier)", "X / Twitter (@AlphaFrontierHQ)", "Bilibili / WeChat Video"]}, "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/ingest-intel": {"ok": true, "card": {"intel_id": "INTEL-639F25", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: Nebius NVIDIA Nemotron-70B × Tavily Sandbox + On-Chain Feed", "title": "Campaign Signal: BNB Chain Tokenized Tech Equities (4STOCK) & 576-Token Golden Washout Re", "summary": "Structured into 3 content angles: (1) Why RWA Tokenized Stocks on BNB Chain bridge TradFi catalysts; (2) How 1s opening wick stripping prevents bad entries; (3) Step-by-step 2.5x principal recovery guide.", "virality_estimate": 96, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-23 15:02 UTC"}, "intel_cards": [{"intel_id": "INTEL-639F25", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: Nebius NVIDIA Nemotron-70B × Tavily Sandbox + On-Chain Feed", "title": "Campaign Signal: BNB Chain Tokenized Tech Equities (4STOCK) & 576-Token Golden Washout Re", "summary": "Structured into 3 content angles: (1) Why RWA Tokenized Stocks on BNB Chain bridge TradFi catalysts; (2) How 1s opening wick stripping prevents bad entries; (3) Step-by-step 2.5x principal recovery guide.", "virality_estimate": 96, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-23 15:02 UTC"}, {"intel_id": "INTEL-2026-1020-01", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: Aralpha 576-Token Data Lake & Tavily Search", "title": "Why 78% of New Token Chasers Lose Money in Hour 1 (And How Wick-Stripped Washout Timing Fixes It)", "summary": "Empirical study of 576 listings shows T+1h FOMO chasing yields -70% median ROI and 90.12% max drawdown due to 1-second opening auction wicks (e.g., DNA $0.04 fake wick vs $0.175 real support). Entering during T+12h~72h with a 2.5x 40% principal-recovery rule delivers +725.82% return and 4.11% max drawdown.", "virality_estimate": 94, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-20 14:10 UTC"}, {"intel_id": "INTEL-2026-1020-02", "channel_key": "ch-ai-quant", "source_badge": "AI-Curated · Source: BNB Chain Anti-Rug Sentinel & GoPlus Feed", "title": "60 Seconds After TGE: Inside the Counterfeit Clone Honeypot Trap & Fail-Closed Defense", "summary": "Scammers deploy identical-ticker contracts (0% buy tax / 100% sell tax) within 1 minute of official listings. Demonstrates how cross-verifying against a 684-token official registry prevents 100% of impersonator losses.", "virality_estimate": 91, "status": "READY_FOR_TOPIC", "updated_at": "2026-10-20 14:25 UTC"}, {"intel_id": "INTEL-2026-1020-03", "channel_key": "ch-seasonal-terroir", "source_badge": "AI-Curated · Source: Zhangluo 2,843-County PostGIS Terroir Index", "title": "Frost's Descent Dining Guide: Pairing Expiring Mountain Bamboo Shoots for Gout-Safe Family Tables", "summary": "How to combine seasonal persimmons, 5-year Xinhui aged tangerine peel (GB/T 20560), and low-purine Jiangnan stews while filtering out 94.2% of paid-ad restaurant chains.", "virality_estimate": 89, "status": "ADOPTED_INTO_CAMPAIGN", "updated_at": "2026-10-20 14:30 UTC"}], "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/calibrate": {"ok": true, "calibration_state": {"raw_ai_slop_draft": "In today's fast-paced crypto landscape, delving into new token launches is a double-edged sword. Many traders experience guaranteed 100x gains if they use smart AI bots, while others face rug pulls. Let's unpack how our revolutionary platform seamlessly empowers your trading journey!", "calibrated_human_draft": "We ran the 1-hour K-lines on 576 real token listings so you don't have to guess. If you market-buy in the first 60 minutes (T+1h), your median trade ROI is -70.0% with a brutal 90.12% max drawdown. Why? Because 1-second opening auction wicks—like DNA printing $0.0400 before settling at $0.1750 real support—trick standard bots. Here is the exact 3-step checklist we use: strip bar[0] opening wicks, wait for the T+12h~72h washout zone [support, +22%], and sell 40% at 2.5x to recover 100% of initial principal.", "slop_phrases_removed": ["In today's fast-paced crypto landscape", "delving into", "double-edged sword", "revolutionary platform seamlessly empowers"], "compliance_fixes_applied": ["Intercepted prohibited claim 'guaranteed 100x gains' -> Replaced with empirical backtest citation (576 tokens, +725.82% historical sample, not future guarantee)", "Added explicit label: 'AI-Curated & Verified · Empirical Backtest Data (Not Financial Advice)'", "Standardized metric label from 'Verified Audience Reactions' to 'Simulated Audience Reactions (Simulated Audience Reaction)' and 'Virality Potential (Estimated Virality Potential: 94/100)'"], "simulated_audience_reactions": [{"persona": "Quant Developer / DeFi Builder", "reaction": "Showing the exact bar[0] opening wick math ($0.04 vs $0.175) immediately proves this isn't generic ChatGPT filler. Instant bookmark.", "retention_score": "93%"}, {"persona": "Cautious Retail Trader", "reaction": "The 'sell 40% at 2.5x = 100% principal recovered' arithmetic is super clear and actionable.", "retention_score": "89%"}], "calibrated_at": "2026-10-23 15:02:18 UTC"}, "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/produce-mpt": {"ok": true, "mpt_steps": [{"step": 1, "name": "1. Direction & Template", "template": "vertical-avatar-news (9:16 Dual-Layer Split)", "status": "DONE", "progress_pct": 100}, {"step": 2, "name": "2. Script & Storyboard", "template": "6-Scene Hook-Evidence-Takeaway Script", "status": "DONE", "progress_pct": 100}, {"step": 3, "name": "3. Verified B-Roll & Charts", "template": "576-Token Equity Curve + Anti-Rug Code Overlay", "status": "DONE", "progress_pct": 100}, {"step": 4, "name": "4. TTS & Dynamic Captions", "template": "Neural Baritone EN/ZH + Gold Highlight Captions", "status": "DONE", "progress_pct": 100}, {"step": 5, "name": "5. MPT Worker Isolated Render", "template": "1080x1920 H.264 60fps · Est. Cost $0.14", "status": "DONE", "progress_pct": 100}, {"step": 6, "name": "6. Expression & Platform Check", "template": "Zero Copyright / Zero Sensitive Terms Verified", "status": "DONE", "progress_pct": 100}, {"step": 7, "name": "7. Interactive Artifact Preview", "template": "62s Vertical Avatar Video + 4 Companion Formats", "status": "DONE", "progress_pct": 100}, {"step": 8, "name": "8. Handoff to Distribution & Provenance", "template": "3-Timezone Queue + SHA-256 On-Chain Attestation", "status": "READY", "progress_pct": 100}], "five_format_artifacts": [{"format_code": "MPT_VERTICAL_VIDEO", "format_name": "1.MPT Vertical Avatar Video (9:16)", "engine": "MPT Worker + vertical-avatar-news", "specs": "1080×1920 · 62s · EN/ZH Dual Subtitles · Digital Anchor + Live K-Line B-Roll", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Hook (0-6s): DNA $0.04 1s fake wick trap ➔ Body (6-45s): 576-token washout zone [support, +22%] & Anti-Rug gate ➔ CTA (45-62s): 2.5x Free-Ride calculator."}, {"format_code": "VISUAL_CAROUSEL", "format_name": "2.6-Slide High-Contrast Carousel", "engine": "WaveWeaver Layout Engine", "specs": "1200×1500 (4:5) · 6 Slides · Dark Institutional Theme", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Slide 1: T+1h Chase (-70% ROI) vs Golden Window (+725.82%) ➔ Slide 2: 1s Wick Anatomy ➔ Slide 3: 684-Token Anti-Rug Gate ➔ Slide 4: 2.5x Free-Ride Math."}, {"format_code": "LONG_ARTICLE", "format_name": "3.Evidence-Backed Research Essay", "engine": "Master Draft + Citation Verifier", "specs": "2,450 Words · 4 Mermaid Diagrams · Full Backtest Table", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Full empirical breakdown of 576 Binance Alpha & BNB Chain listings with reproducible Python snippets."}, {"format_code": "PODCAST_AUDIO", "format_name": "4.Dual-Host AI Audio Briefing", "engine": "Multi-Voice Neural TTS", "specs": "4m 15s · 44.1kHz Stereo AAC · Chapter Markers Included", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Conversational deep dive between Quant Lead & Security Researcher on avoiding TGE honeypots."}, {"format_code": "MICRO_THREAD", "format_name": "5.Calibrated Multi-Platform Micro-Post", "engine": "Platform Variant Adapter", "specs": "<280 Chars / Platform-Native Formatting · Zero AI Clichés", "status": "PRODUCED_READY (15:02:18 UTC)", "preview_summary": "Punchy data-first summary with direct timestamps and SHA-256 content provenance hash."}], "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}, "/api/attest-provenance": {"ok": true, "attestation": {"attestation_id": "WW-PROV-CC89E4D1", "title": "576-Token Golden Washout & Anti-Rug Multi-Format Campaign Master", "creator_handle": "@LinLan_AI_Frontier", "channel_id": "content-channel-53f192ef2cee", "sha256_content_digest": "0xcc89e4d1067672ac97a44435680138112149d5039283e562dfeb5809e31f8edf", "timezones_scheduled": ["Asia/Shanghai (20:00 CST · RedNote / WeChat Video)", "Europe/London (13:00 UTC · X / YouTube Shorts)", "America/New_York (09:00 EDT · LinkedIn / Substack)"], "timestamp": "2026-10-23T15:02:18.004223+00:00"}, "provenance_attestations": [{"attestation_id": "WW-PROV-CC89E4D1", "title": "576-Token Golden Washout & Anti-Rug Multi-Format Campaign Master", "creator_handle": "@LinLan_AI_Frontier", "channel_id": "content-channel-53f192ef2cee", "sha256_content_digest": "0xcc89e4d1067672ac97a44435680138112149d5039283e562dfeb5809e31f8edf", "timezones_scheduled": ["Asia/Shanghai (20:00 CST · RedNote / WeChat Video)", "Europe/London (13:00 UTC · X / YouTube Shorts)", "America/New_York (09:00 EDT · LinkedIn / Substack)"], "timestamp": "2026-10-23T15:02:18.004223+00:00"}, {"attestation_id": "WW-PROV-2DBFD08A", "title": "Why 78% of New Token Chasers Lose Money in Hour 1 (576-Token Study)", "creator_handle": "@LinLan_AI_Frontier", "channel_id": "content-channel-53f192ef2cee", "sha256_content_digest": "0x2dbfd08a2e24f0777ef64ae3fd590451fa67eb12692aafc3e64ab370dd65bd07", "timezones_scheduled": ["Asia/Shanghai (20:00 CST · RedNote / WeChat Video)", "Europe/London (13:00 UTC · X / YouTube Shorts)", "America/New_York (09:00 EDT · LinkedIn / Substack)"], "timestamp": "2026-10-23T15:02:18.003955+00:00"}], "telemetry_logs": [{"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-CC89E4D1", "sha256_digest": "0xcc89e4d1067672ac97a44435...", "timezones_locked": 3}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 7 MPT Managed Video Factory (`vertical-avatar-news`)", "endpoint": "POST /v1/mpt/produce-five-formats", "status": "200_ALL_5_FORMATS_RENDERED", "detail": {"video_engine": "MPT Worker (vertical-avatar-news 9:16 1080p)", "formats_produced": ["MPT_VERTICAL_VIDEO", "VISUAL_CAROUSEL", "LONG_ARTICLE", "PODCAST_AUDIO", "MICRO_THREAD"], "human_takeover_ready": true, "estimated_render_cost_usd": 0.14}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 5 & 6 Anti-AI-Slop Calibration + Pre-Flight Compliance", "endpoint": "POST /v1/workshop/calibrate-and-preflight", "status": "200_SLOP_STRIPPED_AND_COMPLIANT", "detail": {"slop_phrases_removed_count": 4, "prohibited_claims_intercepted": 1, "simulated_audience_retention": "93% (Quant Builder) / 89% (Retail Trader)", "virality_potential_estimate": "94 / 100"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 2 Intel Ingestor (Nebius NVIDIA × Tavily)", "endpoint": "POST /v1/intelligence/ingest-and-structure", "status": "200_INTEL_STRUCTURED", "detail": {"intel_id": "INTEL-639F25", "channel_id": "content-channel-53f192ef2cee", "virality_potential_estimate": 96, "source_disclosure": "Explicitly labeled 'AI-Curated & Verified' with primary citations"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "WaveWeaver 3-Tier Multi-Channel Guard", "endpoint": "POST /v1/workspaces/switch-channel-context", "status": "200_CONTEXT_ISOLATED", "detail": {"organization": "LinLan Media Studio", "workspace_id": "workspace-64a258b19c3d", "channel_id": "content-channel-53f192ef2cee", "channel_name": "AI Frontier & On-Chain Alpha", "cross_channel_contamination": "0% (Strict Persona & Asset Isolation)"}}, {"timestamp": "15:02:18.004 UTC", "module": "Stage 8 3-Timezone Distribution & SHA-256 Provenance (EXT-WW-02)", "endpoint": "POST /v1/distribution/schedule-and-attest", "status": "200_SCHEDULED_AND_ATTESTED", "detail": {"attestation_id": "WW-PROV-2DBFD08A", "sha256_digest": "0x2dbfd08a2e24f0777ef64ae3...", "timezones_locked": 3}}]}};
+    const _origFetch = window.fetch.bind(window);
+    window.fetch = async function(url, opts) {
+      try {
+        const res = await _origFetch(url, opts);
+        if (res && res.ok) return res;
+      } catch (e) {}
+      const path = typeof url === 'string' ? url.split('?')[0] : '';
+      let payload = STATIC_MOCKS[path];
+      if (path === '/api/switch-channel' && opts && opts.body) {
+        const b = JSON.parse(opts.body);
+        payload = STATIC_MOCKS['/api/switch-channel:' + (b.channel_key || 'ch-ai-quant')];
+      }
+      if (payload) {
+        return new Response(JSON.stringify(payload), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      throw new Error('Unmocked path: ' + path);
+    };
+    // --- STATIC GITHUB PAGES FALLBACK END ---
+    let STATE = null;
+
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+    }
+
+    function renderAll() {
+      if (!STATE) return;
+
+      // 8-Stage Strip
+      document.getElementById('stage-strip').innerHTML = STATE.eight_stages.map(s => `
+        <div class="stage-pill">
+          <strong>${s.stage} · ${s.status}</strong>
+          <span>${s.name.split('·')[1] || s.name}</span>
+        </div>
+      `).join('');
+
+      // Active Channel Context
+      const ch = STATE.active_channel;
+      document.getElementById('channel-context-box').innerHTML = `
+        <div class="item-card highlight-cyan">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <div>
+              <span class="badge badge-cyan">${ch.organization}</span>
+              <span class="badge badge-emerald" style="margin-left:6px;">${ch.workspace_name}</span>
+              <h3 style="font-size:16px; margin-top:6px;">${ch.channel_name} (<span class="mono" style="font-size:12px;">${ch.channel_id}</span>)</h3>
+            </div>
+            <span class="badge badge-amber">Connected: ${ch.connected_accounts.join(' · ')}</span>
+          </div>
+          <p style="font-size:12.5px; color:#CBD5E1; margin-bottom:8px;"><strong>Positioning:</strong> ${ch.positioning} | <strong>Tone Guardrails:</strong> ${ch.tone_guardrails}</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${ch.pillars.map(p => `<span class="badge badge-cyan">${p}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      // Intel Cards
+      document.getElementById('intel-cards-grid').innerHTML = STATE.intel_cards.map(c => `
+        <div class="item-card highlight-emerald">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span class="badge badge-cyan">${c.source_badge}</span>
+            <span class="badge badge-amber">Virality Potential: ${c.virality_estimate}/100</span>
+          </div>
+          <h4 style="font-size:14px; margin-bottom:6px;">${c.title}</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">${c.summary}</p>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#34D399;">
+            <span>Status: ${c.status}</span>
+            <span>Updated: ${c.updated_at}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Calibration View
+      const cal = STATE.calibration_state;
+      document.getElementById('calibration-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          <div class="item-card highlight-rose">
+            <span class="badge badge-rose">BEFORE · Raw Uncalibrated LLM Slop (Rejected)</span>
+            <p style="font-size:12.5px; margin-top:8px; color:#FCA5A5;">"${cal.raw_ai_slop_draft}"</p>
+            <div style="margin-top:10px; font-size:11.5px; color:var(--text-muted);">
+              <strong>Slop Clichés Stripped:</strong> ${cal.slop_phrases_removed.map(s => `<code class="mono" style="color:#FB7185;">${s}</code>`).join(', ')}
+            </div>
+          </div>
+          <div class="item-card highlight-emerald">
+            <span class="badge badge-emerald">AFTER · WaveWeaver Humanized & Evidence-Gated Master</span>
+            <p style="font-size:12.5px; margin-top:8px; color:#D1FAE5;">"${cal.calibrated_human_draft}"</p>
+            <div style="margin-top:10px; font-size:11.5px; color:#34D399;">
+              <strong>Calibrated At:</strong> ${cal.calibrated_at}
+            </div>
+          </div>
+        </div>
+        <div class="item-card highlight-cyan">
+          <h4 style="font-size:13.5px; margin-bottom:8px;">🛡️ Stage 6 Pre-Flight Compliance & Simulated Audience Reactions (Simulated Audience Reactions)</h4>
+          <ul style="font-size:12px; color:#CBD5E1; margin-left:18px; margin-bottom:10px;">
+            ${cal.compliance_fixes_applied.map(f => `<li>${f}</li>`).join('')}
+          </ul>
+          <div class="cards-grid">
+            ${cal.simulated_audience_reactions.map(r => `
+              <div style="background:rgba(10,14,23,0.7); padding:10px; border-radius:8px;">
+                <strong style="color:#22D3EE;">Persona: ${r.persona} (Est. Retention ${r.retention_score})</strong>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">"${r.reaction}"</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // MPT & 5 Formats View
+      document.getElementById('mpt-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          ${STATE.five_format_artifacts.map(a => `
+            <div class="item-card highlight-emerald">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <strong>${a.format_name}</strong>
+                <span class="badge badge-emerald">${a.status}</span>
+              </div>
+              <div class="mono" style="font-size:11px; color:#22D3EE; margin-bottom:6px;">Engine: ${a.engine} | ${a.specs}</div>
+              <p style="font-size:12px; color:var(--text-muted);">${a.preview_summary}</p>
+            </div>
+          `).join('')}
+        </div>
+        <div class="item-card highlight-cyan">
+          <h4 style="font-size:13.5px; margin-bottom:8px;">⚙️ MPT 8-Step Transparent Video Sub-Pipeline (Pause / Retry / Manual Fallback Enabled)</h4>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+            ${STATE.mpt_steps.map(st => `
+              <div style="background:rgba(10,14,23,0.7); padding:8px; border-radius:8px; font-size:11.5px;">
+                <strong style="color:#34D399;">${st.name}</strong>
+                <div style="color:var(--text-muted); margin-top:3px;">${st.template}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Distribution, Provenance & 7-Day Review Loop
+      const rev = STATE.seven_day_review_loop;
+      document.getElementById('dist-view').innerHTML = `
+        <div class="cards-grid" style="margin-bottom:14px;">
+          ${STATE.provenance_attestations.map(p => `
+            <div class="item-card highlight-cyan">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span class="badge badge-cyan">${p.attestation_id}</span>
+                <span class="mono" style="font-size:11px; color:#34D399;">Creator: ${p.creator_handle}</span>
+              </div>
+              <h4 style="font-size:14px; margin-bottom:6px;">${p.title}</h4>
+              <div class="mono" style="font-size:11px; color:#FBBF24; word-break:break-all; margin-bottom:6px;">
+                SHA-256 Provenance: ${p.sha256_content_digest}
+              </div>
+              <div style="font-size:11.5px; color:var(--text-muted);">
+                <strong>3-Timezone Queue:</strong> ${p.timezones_scheduled.join(' | ')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="item-card highlight-emerald">
+          <h4 style="font-size:14px; margin-bottom:8px;">📈 7-Day Post-Publish Health Review Loop (${rev.window})</h4>
+          <p style="font-size:12.5px; margin-bottom:8px;">
+            Avg Completion Rate: <strong style="color:#34D399;">${rev.avg_completion_rate_pct}%</strong> ·
+            Save-to-View Ratio: <strong style="color:#22D3EE;">${rev.save_to_view_ratio_pct}%</strong> ·
+            Audience Sentiment: <strong>${rev.comment_sentiment}</strong>
+          </p>
+          <div style="font-size:12px; color:#CBD5E1;">
+            <strong>Next-Round AI Topic Recommendations Fed Back to Stage 2:</strong>
+            <ul style="margin-left:18px; margin-top:4px;">
+              ${rev.next_round_recommendations.map(n => `<li>${n}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+
+      // Telemetry
+      document.getElementById('telemetry-list').innerHTML = STATE.telemetry_logs.map(t => `
+        <div class="log-item">
+          <div style="display:flex; justify-content:space-between;">
+            <strong style="color:#22D3EE;">${t.module}</strong>
+            <span class="mono" style="color:var(--text-muted);">${t.timestamp}</span>
+          </div>
+          <div class="mono" style="font-size:11px; color:#34D399; margin-top:2px;">${t.endpoint} ➔ ${t.status}</div>
+          <pre>${JSON.stringify(t.detail, null, 2)}</pre>
+        </div>
+      `).join('');
+    }
+
+    async function loadState() {
+      const res = await fetch('/api/state');
+      STATE = await res.json();
+      renderAll();
+    }
+
+    async function switchChannel(channelKey, btnEl) {
+      document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      const res = await fetch('/api/switch-channel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel_key: channelKey })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.active_channel_key = data.active_channel_key;
+        STATE.active_channel = data.active_channel;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function ingestLiveIntel() {
+      const res = await fetch('/api/ingest-intel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: 'BNB Chain Tokenized Tech Equities (4STOCK) & 576-Token Golden Washout Report' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.intel_cards = data.intel_cards;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function runCalibration() {
+      const res = await fetch('/api/calibrate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.calibration_state = data.calibration_state;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function produceMptFormats() {
+      const res = await fetch('/api/produce-mpt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.mpt_steps = data.mpt_steps;
+        STATE.five_format_artifacts = data.five_format_artifacts;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    async function mintProvenance() {
+      const res = await fetch('/api/attest-provenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: '576-Token Golden Washout & Anti-Rug Multi-Format Campaign Master' })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        STATE.provenance_attestations = data.provenance_attestations;
+        STATE.telemetry_logs = data.telemetry_logs;
+        renderAll();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadState);
+  </script>
+</body>
+</html>
