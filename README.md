@@ -102,6 +102,35 @@ We explicitly document where WaveWeaver can fail and how our architecture contai
 
 ---
 
+## 🎮 Twitch EventSub × OpenAI Codex Highlight Module (`twitch_codex.py`)
+
+A standalone, stdlib-only module that turns live Twitch events into highlight markers, clips and an OBS alert overlay.
+
+| Step | What runs | LLM? |
+| :--- | :--- | :--- |
+| 1. Webhook intake `POST /eventsub` | HMAC-SHA256 signature check (`message_id + timestamp + body`), 10-min replay window, message-id dedupe, `webhook_callback_verification` challenge reply | No |
+| 2. Hype scoring | 30s sliding window over `channel.chat.message`, `channel.cheer`, `channel.raid`, `channel.subscribe`, `channel.hype_train.*`; fires at score ≥ 100 with 90s cooldown | No |
+| 3. Clip | Helix `POST /helix/clips` when `TWITCH_CLIENT_ID` + `TWITCH_USER_TOKEN` (`clips:edit`) are set; otherwise a labelled `sandbox` record | No |
+| 4. Overlay spec | OpenAI Responses API with model `OPENAI_CODEX_MODEL` returns a 5-field JSON spec (headline, subline, accent, animation, duration) | **Yes** |
+| 5. Overlay render `GET /overlay/latest` | Spec is whitelist-validated, text is HTML-escaped, then rendered by a fixed template. Model output never becomes raw HTML/JS. Honors `prefers-reduced-motion`. | No |
+
+```bash
+export TWITCH_EVENTSUB_SECRET=...           # required for /eventsub
+export OPENAI_API_KEY=... OPENAI_CODEX_MODEL=...   # optional; deterministic fallback spec otherwise
+export TWITCH_CLIENT_ID=... TWITCH_USER_TOKEN=...  # optional; sandbox clip record otherwise
+python3 server.py --port 8767
+curl -X POST localhost:8767/api/twitch/replay   # replays fixtures/eventsub_replay.json (synthetic) through the real pipeline
+open http://localhost:8767/overlay/latest       # add as an OBS Browser Source
+```
+
+**Known limitations**
+- Not yet exercised against a production Twitch channel; tests use synthetic payloads that follow the documented EventSub schema.
+- Thresholds/weights are hand-tuned defaults, not learned from real stream data.
+- Twitch clips capture the last ~30s at request time, so a clip may miss lead-up context if the hype score rises slowly.
+- Codex only writes the small overlay spec; it does not edit video. Any invalid/unsafe spec is replaced with the deterministic fallback.
+
+---
+
 ## 🛠️ What Was Built & Updated During the Hackathon Submission Period
 
 - Built and open-sourced the standalone **WaveWeaver Global Agent Adapter** (`server.py`, `integrations.py`, interactive 8-Stage Media OS & MPT Video Factory workbench, and `pytest` verification suite).

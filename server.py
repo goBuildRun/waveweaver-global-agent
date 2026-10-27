@@ -19,8 +19,12 @@ from integrations import (
     WaveWeaverHackathonEngine,
 )
 
+from twitch_codex import TwitchCodexPipeline, render_overlay_html, replay_fixture
+
 ENGINE = WaveWeaverHackathonEngine()
+TWITCH = TwitchCodexPipeline.from_env()
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+FIXTURE_PATH = Path(__file__).resolve().parent / "fixtures" / "eventsub_replay.json"
 
 
 def handle_api_request(method: str, path: str, body: Dict[str, Any]) -> Dict[str, Any]:
@@ -87,6 +91,17 @@ def handle_api_request(method: str, path: str, body: Dict[str, Any]) -> Dict[str
             "telemetry_logs": ENGINE.telemetry_logs,
         }
 
+    if method == "POST" and path == "/api/twitch/replay":
+        # Replays the synthetic EventSub fixture through the real detector/clip/Codex pipeline.
+        global TWITCH
+        TWITCH = TwitchCodexPipeline.from_env()
+        events = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))["events"]
+        highlights = replay_fixture(TWITCH, events, start=1_000_000.0)
+        return {"ok": True, "highlights": highlights, "log": TWITCH.log}
+
+    if method == "GET" and path == "/api/twitch/highlights":
+        return {"ok": True, "highlights": [h.to_dict() for h in TWITCH.detector.highlights], "log": TWITCH.log}
+
     return {"ok": False, "error": f"Unknown endpoint {method} {path}"}
 
 
@@ -102,6 +117,19 @@ class WaveWeaverRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         clean_path = self.path.split("?", 1)[0]
+        if clean_path == "/overlay/latest":
+            hls = [h for h in TWITCH.detector.highlights if h.overlay]
+            if not hls:
+                self.send_response(204)
+                self.end_headers()
+                return
+            content = render_overlay_html(hls[-1].overlay["spec"]).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
+            self.end_headers()
+            self.wfile.write(content)
+            return
         if clean_path.startswith("/api/"):
             res = handle_api_request("GET", clean_path, {})
             self._send_json(res, 200 if res.get("ok") else 404)
@@ -118,6 +146,16 @@ class WaveWeaverRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         clean_path = self.path.split("?", 1)[0]
         length = int(self.headers.get("Content-Length", "0"))
+        if clean_path == "/eventsub":
+            raw = self.rfile.read(length) if length > 0 else b""
+            status, ctype, text = TWITCH.handle_webhook(dict(self.headers.items()), raw)
+            out = text.encode("utf-8")
+            self.send_response(status)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+            return
         raw_body = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
         try:
             body = json.loads(raw_body) if raw_body else {}

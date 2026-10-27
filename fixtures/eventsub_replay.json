@@ -1,0 +1,12 @@
+{
+  "_note": "Synthetic EventSub replay fixture for local demos/tests. Field names follow Twitch EventSub payloads; values are made up.",
+  "events": [
+    {"t": 0,  "type": "channel.chat.message", "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "chatter_user_login": "viewer_a", "message": {"text": "gg"}}},
+    {"t": 2,  "type": "channel.chat.message", "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "chatter_user_login": "viewer_b", "message": {"text": "LETS GO"}}},
+    {"t": 4,  "type": "channel.cheer",        "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "user_login": "viewer_c", "bits": 300}},
+    {"t": 6,  "type": "channel.raid",         "event": {"from_broadcaster_user_login": "friend_channel", "to_broadcaster_user_id": "1000001", "to_broadcaster_user_login": "demo_streamer", "viewers": 180}},
+    {"t": 8,  "type": "channel.chat.message", "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "chatter_user_login": "raider_1", "message": {"text": "RAID HYPE"}}},
+    {"t": 9,  "type": "channel.chat.message", "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "chatter_user_login": "raider_2", "message": {"text": "hi!"}}},
+    {"t": 60, "type": "channel.chat.message", "event": {"broadcaster_user_id": "1000001", "broadcaster_user_login": "demo_streamer", "chatter_user_login": "viewer_a", "message": {"text": "that was crazy"}}}
+  ]
+}
