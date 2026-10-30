@@ -1,0 +1,13 @@
+{
+  "name": "waveweaver-atlassian-forge-rovo-mcp",
+  "version": "1.0.0",
+  "description": "Atlassian Forge App + Rovo Agent (rovo:agent / action) + Atlassian MCP Server & Teamwork Graph Integration for WaveWeaver 8-Stage Media OS (Codegeist 2026)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "forge lint",
+    "deploy": "forge deploy",
+    "install": "forge install"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,86 @@
+modules:
+  rovo:agent:
+    - key: waveweaver-release-agent
+      name: "WaveWeaver Release & Media OS Agent"
+      description: "8-stage human-in-the-loop release media OS that turns Jira Epics, Teamwork Graph dependencies, and Confluence specs into Anti-AI-Slop calibrated release notes, 9:16 video changelogs, and SHA-256 provenance attestations."
+      prompt: |
+        You are @WaveWeaver, an industrial-grade 8-stage release briefing and multi-format media agent running on Atlassian Forge.
+        When invoked on a Jira Epic, Sprint, or Confluence page:
+        1. Call `traverse-teamwork-graph` to gather linked Jira issues, PRs, and Confluence specs with 0% cross-project contamination.
+        2. Call `audit-anti-ai-slop` to strip generic LLM clichés ("delving into", "game-changing") and ground every claim in verified ticket metrics.
+        3. Call `synthesize-sprint-media-kit` to produce a 5-format release package (9:16 MPT Video script, 6-slide visual carousel, Confluence executive doc, dual-host podcast script, and SHA-256 content provenance digest).
+      actions:
+        - traverse-teamwork-graph
+        - audit-anti-ai-slop
+        - synthesize-sprint-media-kit
+      conversationStarters:
+        - "Generate an Anti-AI-Slop executive release brief and 9:16 video script for Sprint 42"
+        - "Traverse Teamwork Graph for Epic ENG-804 and audit release documentation for unverified claims"
+        - "Publish a 5-format release media kit with SHA-256 provenance to Confluence"
+
+  action:
+    - key: traverse-teamwork-graph
+      name: "Traverse Teamwork Graph & Jira Context"
+      function: traverseTeamworkGraph
+      actionVerb: GET
+      description: "Queries Jira issues, Confluence specs, and Teamwork Graph relationships for a target Epic or Sprint key."
+      inputs:
+        epicOrSprintKey:
+          title: "Epic or Sprint Key"
+          type: string
+          required: true
+          description: "The Jira Epic key (e.g., ENG-804) or Sprint identifier."
+
+    - key: audit-anti-ai-slop
+      name: "Audit & Calibrate Draft Against AI Slop"
+      function: auditAntiAiSlop
+      actionVerb: GET
+      description: "Runs WaveWeaver Stage 5 & 6 Anti-AI-Slop calibration and Pre-Flight Compliance check on draft release text."
+      inputs:
+        draftText:
+          title: "Draft Release Text"
+          type: string
+          required: true
+          description: "Raw release note or announcement draft to calibrate."
+
+    - key: synthesize-sprint-media-kit
+      name: "Synthesize 5-Format Sprint Media Kit & MCP Payload"
+      function: synthesizeSprintMediaKit
+      actionVerb: CREATE
+      description: "Executes WaveWeaver Stage 7 & 8 to generate a 5-format release bundle and SHA-256 provenance attestation."
+      inputs:
+        epicKey:
+          title: "Jira Epic Key"
+          type: string
+          required: true
+          description: "Target Jira Epic key (e.g., ENG-804)."
+        channelIsolationNamespace:
+          title: "Channel Isolation Namespace"
+          type: string
+          required: false
+          description: "3-tier tenant boundary (Organization::Project::ReleaseChannel)."
+
+  webtrigger:
+    - key: waveweaver-atlassian-mcp-server
+      function: handleMcpRequest
+
+  function:
+    - key: traverseTeamworkGraph
+      handler: index.traverseTeamworkGraph
+    - key: auditAntiAiSlop
+      handler: index.auditAntiAiSlop
+    - key: synthesizeSprintMediaKit
+      handler: index.synthesizeSprintMediaKit
+    - key: handleMcpRequest
+      handler: index.handleMcpRequest
+
+permissions:
+  scopes:
+    - read:jira-work
+    - read:confluence-content.summary
+    - write:confluence-page
+
+app:
+  runtime:
+    name: nodejs20.x
+  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-waveweaver2026
