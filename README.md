@@ -8,7 +8,9 @@
 [![Live Web Demo: Zero-Login Interactive Workbench](https://img.shields.io/badge/🚀%20Live%20Web%20Demo-Zero--Login%20Interactive%20Workbench-2563EB)](https://htmlpreview.github.io/?https://github.com/goBuildRun/waveweaver-global-agent/blob/main/index.html)
 [![Demo Video: YouTube 1080p](https://img.shields.io/badge/🎥%20Watch%20Demo%20Video-YouTube%201080p-red)](https://youtu.be/-Ct0SnpgSB4)
 
-> 🚀 **Try the Live Interactive Web Workbench (100% English, Public Zero-Login Browser Demo)**: **[Launch WaveWeaver Live Workbench](https://htmlpreview.github.io/?https://github.com/goBuildRun/waveweaver-global-agent/blob/main/index.html)** *(or run locally via `python3 server.py --port 8767`)*
+> 🚀 **Try the Live Interactive Web Workbench (100% English, Public Zero-Login Browser Demo)**:
+> - **⛓️ Gno.land Onyx-1 Provenance Realm View (`?mode=gno`)**: **[https://htmlpreview.github.io/?https://github.com/goBuildRun/waveweaver-global-agent/blob/main/index.html?mode=gno](https://htmlpreview.github.io/?https://github.com/goBuildRun/waveweaver-global-agent/blob/main/index.html?mode=gno)**
+> - **🌐 Full 8-Stage Media OS Workbench**: **[Launch WaveWeaver Live Workbench](https://htmlpreview.github.io/?https://github.com/goBuildRun/waveweaver-global-agent/blob/main/index.html)** *(or run locally via `python3 server.py --port 8767`)*
 >
 > 🎬 **Watch the 1m39s 1080p English-Narrated Demo Video**: **[https://youtu.be/-Ct0SnpgSB4](https://youtu.be/-Ct0SnpgSB4)**
 > - **`0:00 - 0:26` ⚡ The 30-Second Aha Moment**: Switching isolated multi-tenant channels (`Organization ➔ Workspace ➔ ContentChannel`) and watching Stage 5 (`Anti-AI-Slop Calibration`) + Stage 6 (`Golden Set QA Gate = 94.2`) strip LLM clichés and block unverified claims before production.
@@ -21,6 +23,20 @@
 **WaveWeaver** is an industrial-grade **Multi-Channel AI Media Operating System**. Unlike single-prompt tweet generators that flood social media with repetitive plastic clichés ("AI slop"), WaveWeaver governs the entire content lifecycle across **8 transparent, human-takeover-ready stages**:
 
 `1. Channel Strategy & Pillars ➔ 2. Multi-Source Intel Ingestion ('Curated via AI Synthesis') ➔ 3. Topic & Campaign Planning ➔ 4. Master Draft & Platform Variants ➔ 5. Anti-AI-Slop Humanized Calibration & Simulated Audience Reactions ➔ 6. Pre-Flight Compliance Gate ➔ 7. MPT Managed Video Factory (9:16 Avatar Video + 5 Formats) ➔ 8. 3-Timezone Distribution, SHA-256 Content Provenance & 7-Day Review Loop.`
+
+---
+
+## ⛓️ Gnome Tavern | Gno.land (`onyx-1`) — Stateful Content Provenance Realm & `gnomcp` Bridge
+
+[![Gno.land Onyx-1](https://img.shields.io/badge/Gno.land_Testnet-onyx--1_Stateful_Realm-10B981)](https://onyx.testnets.gno.land/r/g1kevlnv7ukvlx70w390fshwwsp9e2mr9dkaptmd/waveweaver_provenance_v1)
+
+- **On-Chain Realm Path (`onyx-1`)**: [`gno.land/r/g1kevlnv7ukvlx70w390fshwwsp9e2mr9dkaptmd/waveweaver_provenance_v1`](https://onyx.testnets.gno.land/r/g1kevlnv7ukvlx70w390fshwwsp9e2mr9dkaptmd/waveweaver_provenance_v1)
+- **Verified `onyx-1` Deployment Transaction**: `9a46e4b9cde2d879972f5af544750bbdc01036ddaa9ec97001e44c878c8f8422` (`Block #1,366,542`, Deployer `g1kevlnv7ukvlx70w390fshwwsp9e2mr9dkaptmd`)
+- **Realm Source & Gno Unit Tests**: [`realms/waveweaver_provenance/provenance.gno`](./realms/waveweaver_provenance/provenance.gno) · [`provenance_test.gno`](./realms/waveweaver_provenance/provenance_test.gno) · Python ABCI/`gnomcp` Bridge [`gno_provenance.py`](./gno_provenance.py)
+- **What Runs On-Chain in Gno**:
+  1. **Deterministic Anti-AI-Slop Gate (`AnchorPublication`)**: Reverts on-chain if Stage 6 Golden Set QA score `< 850` permille (`85.0%`), if primary-source citation count `< 1`, or if a duplicate `SHA-256` content digest is submitted; commits verified records to `gno.land/p/nt/avl/v0` trees and emits `WaveWeaverProvenanceAnchored`.
+  2. **Gasless Agent & Reader Verification (`VerifyDigest`)**: Enables downstream AI agents (via `gnomcp` `gno_eval` / `vm/qeval`) to verify authorship, channel isolation, and `SHA-256` content integrity.
+  3. **Native `gnoweb` Markdown Directory (`Render(path string) string`)**: Serves dashboard (`""`), isolated channel views (`"channel/<slug>"`), and full provenance certificates (`"pub/<id>"`).
 
 ---
 
@@ -56,8 +72,8 @@ python3 server.py --port 8767
 # 2. Open in browser:
 # http://127.0.0.1:8767
 
-# 3. Run the automated verification suite:
-pytest tests/test_waveweaver_hackathon_adapter.py -v
+# 3. Run the automated verification suite (including live Twitch state/SSE tests):
+pytest tests -q
 ```
 
 ---
@@ -112,7 +128,7 @@ A standalone, stdlib-only module that turns live Twitch events into highlight ma
 | 2. Hype scoring | 30s sliding window over `channel.chat.message`, `channel.cheer`, `channel.raid`, `channel.subscribe`, `channel.hype_train.*`; fires at score ≥ 100 with 90s cooldown | No |
 | 3. Clip | Helix `POST /helix/clips` when `TWITCH_CLIENT_ID` + `TWITCH_USER_TOKEN` (`clips:edit`) are set; otherwise a labelled `sandbox` record | No |
 | 4. Overlay spec | OpenAI Responses API with model `OPENAI_CODEX_MODEL` returns a 5-field JSON spec (headline, subline, accent, animation, duration) | **Yes** |
-| 5. Overlay render `GET /overlay/latest` | Spec is whitelist-validated, text is HTML-escaped, then rendered by a fixed template. Model output never becomes raw HTML/JS. Honors `prefers-reduced-motion`. | No |
+| 5. Overlay render `GET /overlay/latest` or the SSE page `/twitch/overlay` | Specs are whitelist-validated, text is HTML-escaped or assigned with `textContent`, and model output never becomes raw HTML/JS. The live page waits for streamer approval and honors `prefers-reduced-motion`. | No |
 
 ```bash
 export TWITCH_EVENTSUB_SECRET=...           # required for /eventsub
@@ -120,14 +136,74 @@ export OPENAI_API_KEY=... OPENAI_CODEX_MODEL=...   # optional; deterministic fal
 export TWITCH_CLIENT_ID=... TWITCH_USER_TOKEN=...  # optional; sandbox clip record otherwise
 python3 server.py --port 8767
 curl -X POST localhost:8767/api/twitch/replay   # replays fixtures/eventsub_replay.json (synthetic) through the real pipeline
-open http://localhost:8767/overlay/latest       # add as an OBS Browser Source
+open http://localhost:8767/twitch/control      # streamer controls
+open http://localhost:8767/twitch/overlay      # add this SSE page as an OBS Browser Source
 ```
 
+### Live chat plays the overlay
+
+The live workbench keeps ``twitch_codex.py`` as a library.  Verified EventSub
+notifications are passed to a separate state layer that understands these chat
+commands:
+
+- ``!vote <option>`` casts one vote per chatter in the active poll.
+- ``!hype`` adds ten points to the overlay hype meter.
+- Cheers and raids also add points using the same deterministic scoring weights
+  as the Codex highlight detector.
+
+The OBS page is ``http://127.0.0.1:8767/twitch/overlay``.  It subscribes to
+``/api/twitch/events?role=overlay`` with Server-Sent Events and only renders an
+alert after it has been approved in
+``http://127.0.0.1:8767/twitch/control``.  The control page can start and stop
+polls, show pending Codex-generated alert specs, and approve or reject them.
+
+To protect control actions on a shared machine, set an optional local token:
+
+```bash
+export TWITCH_CONTROL_TOKEN='use-a-long-random-local-value'
+```
+
+The control page sends that value as ``X-Control-Token``.  Keep the server on a
+local interface unless the tunnel is protected by your own access control.
+
+### Register Twitch EventSub subscriptions
+
+Twitch must be able to reach the webhook over HTTPS.  In one terminal start the
+server, and in another start a disposable local tunnel:
+
+```bash
+python3 server.py --host 127.0.0.1 --port 8767
+cloudflared tunnel --url http://127.0.0.1:8767
+# or: ngrok http 8767
+```
+
+Then export a Twitch app client ID, a user token, and a 10-100 character
+EventSub secret.  The chat subscription needs a matching ``user_id`` (the
+streamer account is the default); request ``user:read:chat`` and ``bits:read``
+when authorizing the token:
+
+```bash
+export TWITCH_CLIENT_ID='...'
+export TWITCH_USER_TOKEN='...'
+export TWITCH_BROADCASTER_USER_ID='12345678'  # or set TWITCH_BROADCASTER_LOGIN
+export TWITCH_EVENTSUB_SECRET='a-random-10-to-100-character-secret'
+export TWITCH_EVENTSUB_CALLBACK='https://YOUR-TUNNEL.example/eventsub'
+python3 scripts/register_eventsub.py
+```
+
+The script creates ``channel.chat.message``, ``channel.cheer``, and
+``channel.raid`` webhook subscriptions through Helix and prints each returned
+subscription status.  Use ``python3 scripts/register_eventsub.py --dry-run``
+to validate configuration and inspect the requested subscription set without
+calling Twitch.  Twitch sends a verification challenge to the callback when a
+subscription is created; the existing verifier in ``twitch_codex.py`` handles
+that challenge and rejects stale, tampered, or replayed deliveries.
+
 **Known limitations**
-- Not yet exercised against a production Twitch channel; tests use synthetic payloads that follow the documented EventSub schema.
+- The live path still needs a publicly reachable HTTPS tunnel and valid Twitch user token; tests use synthetic payloads that follow the documented EventSub schema.
 - Thresholds/weights are hand-tuned defaults, not learned from real stream data.
 - Twitch clips capture the last ~30s at request time, so a clip may miss lead-up context if the hype score rises slowly.
-- Codex only writes the small overlay spec; it does not edit video. Any invalid/unsafe spec is replaced with the deterministic fallback.
+- Codex only writes the small overlay spec; it does not edit video. Any invalid/unsafe spec is replaced with the deterministic fallback and held for streamer approval.
 
 ---
 

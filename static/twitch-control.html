@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WaveWeaver Twitch Control</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #09090b; color: #fafafa; }
+    main { width: min(960px, 94vw); margin: 32px auto; }
+    section { margin: 18px 0; padding: 20px; border: 1px solid #27272a; border-radius: 12px; background: #18181b; }
+    h1, h2 { margin-top: 0; }
+    label { display: block; margin: 12px 0 5px; color: #a1a1aa; font-size: 13px; }
+    input, textarea { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #3f3f46; border-radius: 7px; background: #09090b; color: #fafafa; font: inherit; }
+    textarea { min-height: 72px; resize: vertical; }
+    button { margin: 12px 8px 0 0; padding: 9px 13px; border: 0; border-radius: 7px; background: #9146ff; color: #fff; font-weight: 700; cursor: pointer; }
+    button.secondary { background: #3f3f46; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .card { padding: 14px; border: 1px solid #3f3f46; border-radius: 8px; background: #27272a; }
+    .card h3 { margin: 0 0 7px; font-size: 16px; }
+    .muted { color: #a1a1aa; font-size: 13px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    #status { min-height: 20px; color: #67e8f9; }
+    .alert-copy { white-space: pre-wrap; color: #d4d4d8; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Streamer control</h1>
+    <p class="muted">Start a chat poll, watch the hype meter, and approve Codex alerts before they reach OBS.</p>
+    <section>
+      <h2>Control access</h2>
+      <label for="token">Control token (only needed when TWITCH_CONTROL_TOKEN is set)</label>
+      <input id="token" type="password" autocomplete="off" placeholder="Optional local control token">
+    </section>
+    <section>
+      <h2>Poll</h2>
+      <label for="question">Question</label>
+      <input id="question" maxlength="120" placeholder="Which segment should we play next?">
+      <label for="options">Options (comma separated)</label>
+      <input id="options" placeholder="A, B, C">
+      <label for="duration">Duration in seconds</label>
+      <input id="duration" type="number" min="5" max="3600" value="300">
+      <button id="start">Start poll</button>
+      <button id="stop" class="secondary">Stop poll</button>
+      <div id="poll-status" class="muted"></div>
+    </section>
+    <section>
+      <h2>Pending Codex alerts</h2>
+      <div id="alerts" class="grid"></div>
+    </section>
+    <section>
+      <h2>Live state</h2>
+      <div id="live-state" class="muted"></div>
+    </section>
+    <p id="status" role="status"></p>
+  </main>
+  <script>
+    const statusEl = document.getElementById('status');
+    const source = new EventSource('/api/twitch/events?role=control');
+    let state = { pending_alerts: [] };
+
+    function authHeaders() {
+      const token = document.getElementById('token').value.trim();
+      return token ? { 'X-Control-Token': token } : {};
+    }
+
+    function renderState(next) {
+      state = next;
+      const poll = next.poll;
+      document.getElementById('poll-status').textContent = poll ? `${poll.question} · ${poll.total_votes} votes · ${poll.active ? `${poll.remaining_seconds}s remaining` : 'stopped'}` : 'No poll';
+      document.getElementById('live-state').textContent = `Hype ${Number(next.hype && next.hype.score || 0).toFixed(1)} / ${next.hype && next.hype.max || 100}`;
+      const root = document.getElementById('alerts');
+      root.replaceChildren();
+      (next.pending_alerts || []).forEach((alert) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const heading = document.createElement('h3');
+        heading.textContent = alert.overlay && alert.overlay.spec ? alert.overlay.spec.headline : 'Pending alert';
+        const copy = document.createElement('div');
+        copy.className = 'alert-copy';
+        copy.textContent = alert.overlay && alert.overlay.spec ? alert.overlay.spec.subline : '';
+        const approve = document.createElement('button');
+        approve.textContent = 'Approve for OBS';
+        approve.addEventListener('click', () => action('/api/twitch/alert/approve', { alert_id: alert.alert_id }));
+        const reject = document.createElement('button');
+        reject.className = 'secondary';
+        reject.textContent = 'Reject';
+        reject.addEventListener('click', () => action('/api/twitch/alert/reject', { alert_id: alert.alert_id }));
+        card.append(heading, copy, approve, reject);
+        root.append(card);
+      });
+    }
+
+    async function action(path, body) {
+      statusEl.textContent = 'Working...';
+      const response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify(body) });
+      const data = await response.json();
+      statusEl.textContent = data.ok ? 'Saved.' : (data.error || 'Request failed.');
+      if (data.ok && data.poll) renderState({ ...state, poll: data.poll });
+      return data;
+    }
+
+    document.getElementById('start').addEventListener('click', () => action('/api/twitch/poll/start', {
+      question: document.getElementById('question').value,
+      options: document.getElementById('options').value.split(',').map((item) => item.trim()).filter(Boolean),
+      duration_seconds: Number(document.getElementById('duration').value),
+    }));
+    document.getElementById('stop').addEventListener('click', () => action('/api/twitch/poll/stop', {}));
+    source.addEventListener('state', (event) => renderState(JSON.parse(event.data)));
+  </script>
+</body>
+</html>
