@@ -18,6 +18,14 @@ modules:
         - "Traverse Teamwork Graph for Epic ENG-804 and audit release documentation for unverified claims"
         - "Publish a 5-format release media kit with SHA-256 provenance to Confluence"
 
+  rovo:mcp:
+    - key: waveweaver-release-mcp
+      name: "WaveWeaver Release MCP"
+      tools:
+        - traverse-teamwork-graph
+        - audit-anti-ai-slop
+        - synthesize-sprint-media-kit
+
   action:
     - key: traverse-teamwork-graph
       name: "Traverse Teamwork Graph & Jira Context"

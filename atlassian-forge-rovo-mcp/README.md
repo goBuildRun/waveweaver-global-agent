@@ -15,7 +15,7 @@ This directory contains the native **Atlassian Forge** application module for **
 2. **Bonus Prize 1 — Best Agents (Rovo/Assignable agents · $1,500 × 6)**:
    - Declares `rovo:agent` (`waveweaver-release-agent`) and 3 structured `action` tools (`traverse-teamwork-graph`, `audit-anti-ai-slop`, `synthesize-sprint-media-kit`) in [`manifest.yml`](./manifest.yml).
 3. **Bonus Prize 2 — Best app with Atlassian MCP ($1,500 × 6)**:
-   - Exposes a compliant JSON-RPC 2.0 Model Context Protocol (MCP) server via Forge WebTrigger (`waveweaver-atlassian-mcp-server`) in [`src/index.js`](./src/index.js) (`tools/list` and `tools/call`).
+   - Declares the native Atlassian Forge **`rovo:mcp`** module (`key: waveweaver-release-mcp`, `name: "WaveWeaver Release MCP"`) in [`manifest.yml`](./manifest.yml) exposing all 3 Forge actions (`traverse-teamwork-graph`, `audit-anti-ai-slop`, `synthesize-sprint-media-kit`) via the managed Atlassian MCP server to Rovo Studio and external MCP clients, plus a direct JSON-RPC 2.0 WebTrigger (`waveweaver-atlassian-mcp-server`) in [`src/index.js`](./src/index.js).
 4. **Bonus Prize 3 — Best apps with Teamwork Graph integration ($1,500 × 6)**:
    - Traverses linked Jira Epics, completed sprint issues, and Confluence specifications while enforcing WaveWeaver's 3-tier `Organization ➔ Workspace ➔ ReleaseChannel` context isolation (`0.0%` cross-channel contamination).
 
@@ -40,8 +40,9 @@ Atlassian's Codegeist 2026 rubric highlights the **six types of context a compan
 
 ### 1. Forge Modules ([`manifest.yml`](./manifest.yml))
 - **`rovo:agent` (`waveweaver-release-agent`)**: Interactive Rovo agent with 3 bound actions and pre-configured sprint/epic conversation starters.
+- **`rovo:mcp` (`waveweaver-release-mcp` · `"WaveWeaver Release MCP"`)**: Official Atlassian Forge MCP server declaration exposing `traverse-teamwork-graph`, `audit-anti-ai-slop`, and `synthesize-sprint-media-kit` directly through the Atlassian MCP server with per-user permission enforcement.
 - **`action` (`traverse-teamwork-graph`, `audit-anti-ai-slop`, `synthesize-sprint-media-kit`)**: Deterministic GET/CREATE handlers backed by [`src/index.js`](./src/index.js).
-- **`webtrigger` (`waveweaver-atlassian-mcp-server`)**: Exposes the same 3 capabilities over JSON-RPC 2.0 (`tools/list`, `tools/call`) to any MCP client while honoring Forge tenant isolation.
+- **`webtrigger` (`waveweaver-atlassian-mcp-server`)**: Exposes the same 3 capabilities over JSON-RPC 2.0 (`tools/list`, `tools/call`) to standalone HTTP MCP clients while honoring Forge tenant isolation.
 - **Least-Privilege Scopes**: `read:jira-work`, `read:confluence-content.summary`, `write:confluence-page` (zero customer data used for model training).
 
 ### 2. Testing the MCP Server Endpoint

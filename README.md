@@ -40,6 +40,18 @@
 
 ---
 
+## 🧩 Codegeist 2026 | Atlassian Forge, Rovo Agent, Teamwork Graph & `rovo:mcp` Module
+
+[![Atlassian Forge](https://img.shields.io/badge/Atlassian_Forge-nodejs20.x_%7C_rovo%3Amcp-0052CC)](./atlassian-forge-rovo-mcp/manifest.yml)
+
+- **Forge App Directory**: [`./atlassian-forge-rovo-mcp/`](./atlassian-forge-rovo-mcp/README.md) ([`manifest.yml`](./atlassian-forge-rovo-mcp/manifest.yml) · [`src/index.js`](./atlassian-forge-rovo-mcp/src/index.js))
+- **Declared Forge Modules (`Codegeist 2026` Bonus Prize Aligned)**:
+  1. **`rovo:agent` (`waveweaver-release-agent`)**: Interactive `@WaveWeaver` Rovo agent for *Best Agents (Rovo/Assignable)*.
+  2. **`rovo:mcp` (`waveweaver-release-mcp` · `"WaveWeaver Release MCP"`)**: Exposes `traverse-teamwork-graph`, `audit-anti-ai-slop`, and `synthesize-sprint-media-kit` via the managed Atlassian MCP server for *Best App with Atlassian MCP*.
+  3. **Teamwork Graph & 6 Enterprise Context Pillars**: Connects Jira Epics, Confluence release specs, People, Anti-AI-Slop Communication, SHA-256 Code Provenance, and 5-Format Media Assets with `0.0%` cross-channel leakage for *Best Apps with Teamwork Graph Integration*.
+
+---
+
 ## 🌟 Core Technical Differentiators
 
 ### 1. Three-Tier Multi-Tenant & Multi-Channel Isolation (`Organization ➔ Workspace ➔ ContentChannel`)
